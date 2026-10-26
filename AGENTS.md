@@ -15,6 +15,7 @@ TypeScript + Canvas (no game engine); the backend is Telegram Serverless
 | `tgcloud/handlers/` | Telegram updates (`message`, `pre_checkout_query`). |
 | `tgcloud/endpoints/` | Functions called by the Mini App via `Telegram.WebApp.Serverless.call`. |
 | `docs/` | Deployment and SDK notes. |
+| `.github/workflows/pages.yml` | GitHub Pages demo build (`VITE_LOCAL_ONLY=1`, no backend). |
 | `dist/` | Build output uploaded by `tgcloud push` (gitignored). |
 
 ## Commands

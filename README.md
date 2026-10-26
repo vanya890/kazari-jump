@@ -4,7 +4,12 @@
 
 [![Играть в браузере](https://img.shields.io/badge/%E2%96%B6%20%D0%98%D0%B3%D1%80%D0%B0%D1%82%D1%8C-%D0%B2%20%D0%B1%D1%80%D0%B0%D1%83%D0%B7%D0%B5%D1%80%D0%B5-2ee6a8?style=for-the-badge)](https://vanya890.github.io/kazari-jump/)
 [![Telegram](https://img.shields.io/badge/Telegram-%40CodyKazari__bot-26A5E4?style=for-the-badge&logo=telegram&logoColor=white)](https://t.me/CodyKazari_bot)
+[![Source](https://img.shields.io/badge/GitHub-%D0%98%D1%81%D1%85%D0%BE%D0%B4%D0%BD%D0%B8%D0%BA%D0%B8-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/vanya890/kazari-jump)
 [![Deploy browser demo](https://github.com/vanya890/kazari-jump/actions/workflows/pages.yml/badge.svg)](https://github.com/vanya890/kazari-jump/actions/workflows/pages.yml)
+
+[▶ Открыть демо](https://vanya890.github.io/kazari-jump/) · [@CodyKazari_bot](https://t.me/CodyKazari_bot) · [Пересобрать в Actions](https://github.com/vanya890/kazari-jump/actions/workflows/pages.yml) · [Скачать ZIP](https://github.com/vanya890/kazari-jump/archive/refs/heads/main.zip)
+
+> Сейчас @CodyKazari_bot открывает статическую демо-версию через кнопку меню. Полный бэкенд (реальный рейтинг, рефералы, Stars) готов в `tgcloud/`, но ещё не развёрнут: для него нужен CLI-токен BotFather.
 
 ## Что это
 

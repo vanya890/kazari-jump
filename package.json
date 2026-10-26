@@ -3,7 +3,12 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "description": "Kazari Jump — a one-tap Telegram Mini App runner on Telegram Serverless",
+  "description": "Kazari Jump - a one-tap Telegram Mini App runner on Telegram Serverless",
+  "homepage": "https://vanya890.github.io/kazari-jump/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vanya890/kazari-jump.git"
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
