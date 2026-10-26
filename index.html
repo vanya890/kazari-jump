@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#100f2b" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="description" content="Kazari Jump — прыгай, собирай монеты, бей рекорды друзей." />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23100f2b'/%3E%3Cpath d='M16 22 24 12l6 8h4l6-8 8 10v18c0 8-6 14-14 14S16 48 16 40Z' fill='%23fff7ef'/%3E%3Ccircle cx='26' cy='34' r='3' fill='%23100f2b'/%3E%3Ccircle cx='38' cy='34' r='3' fill='%23100f2b'/%3E%3Cpath d='M28 43c2 2 6 2 8 0' stroke='%23100f2b' stroke-width='2.4' stroke-linecap='round' fill='none'/%3E%3Cpath d='M14 38h8' stroke='%232ee6a8' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E"
+    />
+    <title>Kazari Jump</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  </head>
+  <body>
+    <div id="app">
+      <div id="stage" class="stage">
+        <canvas id="game" aria-label="Kazari Jump game canvas"></canvas>
+
+        <header id="hud" class="hud">
+          <div class="hud-score" aria-hidden="true">
+            <span id="hud-distance" class="hud-value">0</span>
+            <span id="hud-unit" class="hud-unit">м</span>
+          </div>
+          <div class="hud-right">
+            <div class="hud-coins" aria-hidden="true">
+              <span class="coin-dot" aria-hidden="true"></span>
+              <span id="hud-run-coins">0</span>
+            </div>
+            <button id="btn-pause" class="icon-button" type="button" aria-label="Пауза">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="5" width="3.5" height="14" rx="1.2" /><rect x="13.5" y="5" width="3.5" height="14" rx="1.2" /></svg>
+            </button>
+          </div>
+        </header>
+
+        <div id="ui" class="ui"></div>
+        <div id="toast" class="toast" role="status" aria-live="polite"></div>
+        <div id="rotate-hint" class="rotate-hint">Лучше играть в вертикальном режиме</div>
+      </div>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

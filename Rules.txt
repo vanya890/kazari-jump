@@ -1,0 +1,14 @@
+By accepting these Rules, you agree that:
+
+1. You will not implement any ads or any external links on your custom URL pages [1].
+2. You will not invite users to pay for any services provided on custom URL pages [2].
+3. You will not use any data collected over the course of user interaction with your custom URLs for spamming Telegram users.
+4. You will not transfer any Telegram data collected over the course of user interaction with your custom URLs to any third parties.
+5. In order to protect the privacy of Telegram users, your custom URL pages must not set any cookies.
+
+Any violation of these Rules may result in a permanent ban of your bots from Telegram.
+
+To be able to defend the privacy of our users and maintain the consistency of their experience in the ever-changing digital environment, we at Telegram reserve the right to change these Rules later. If any changes to these Rules occur, you will receive a private message from BotFather.
+
+
+[1, 2] We understand that developers providing HTML5-experiences for Telegram users may expect financial returns on their work. To that end, we will introduce unified monetization tools for our Bot API later.

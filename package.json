@@ -1,0 +1,25 @@
+{
+  "name": "kazari-jump",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Kazari Jump — a one-tap Telegram Mini App runner on Telegram Serverless",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "deploy": "npm run build && tgcloud push",
+    "status": "tgcloud status",
+    "diff": "tgcloud diff",
+    "migrate": "tgcloud migrate",
+    "run": "tgcloud run"
+  },
+  "devDependencies": {
+    "@tgcloud/cli": "^0.2.0",
+    "typescript": "~5.9.3",
+    "vite": "^7.1.9"
+  },
+  "allowScripts": {
+    "esbuild@0.28.2": true
+  }
+}

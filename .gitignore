@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.tgcloud/
+.playwright-mcp/
+.env
+.env.local
+.env.*.local
+*.local
+bot token.txt
+Идея.txt
+.sage-memory/
+.DS_Store
