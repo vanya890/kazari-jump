@@ -225,15 +225,15 @@ function drawSky(ctx: CanvasRenderingContext2D, s: GameState, p: Palette): void 
   ctx.globalAlpha = 1;
 
   for (const cloud of s.clouds) {
-    ctx.globalAlpha = cloud.alpha * (0.55 + p.night * 0.15);
+    ctx.globalAlpha = cloud.alpha * (0.6 + p.night * 0.18);
     ctx.fillStyle = p.cloud;
-    const w = 46 * cloud.scale * s.unit;
-    const h = 16 * cloud.scale * s.unit;
+    const w = 64 * cloud.scale * s.unit;
+    const h = 22 * cloud.scale * s.unit;
     ellipse(ctx, cloud.x, cloud.y, w, h);
     ctx.fill();
-    ellipse(ctx, cloud.x - w * 0.45, cloud.y + h * 0.25, w * 0.52, h * 0.72);
+    ellipse(ctx, cloud.x - w * 0.48, cloud.y + h * 0.28, w * 0.58, h * 0.78);
     ctx.fill();
-    ellipse(ctx, cloud.x + w * 0.4, cloud.y + h * 0.2, w * 0.58, h * 0.8);
+    ellipse(ctx, cloud.x + w * 0.42, cloud.y + h * 0.22, w * 0.64, h * 0.86);
     ctx.fill();
   }
   ctx.globalAlpha = 1;
@@ -265,9 +265,9 @@ function ridge(
 
 function drawMountains(ctx: CanvasRenderingContext2D, s: GameState, p: Palette): void {
   const off = s.distancePx;
-  ridge(ctx, s, s.groundY - 92 * s.unit, 62 * s.unit, off * 0.05, p.far, 14);
-  ridge(ctx, s, s.groundY - 38 * s.unit, 78 * s.unit, off * 0.11, p.mid, 12);
-  ridge(ctx, s, s.groundY + 12 * s.unit, 46 * s.unit, off * 0.2, p.near, 10);
+  ridge(ctx, s, s.groundY - 110 * s.unit, 76 * s.unit, off * 0.045, p.far, 16);
+  ridge(ctx, s, s.groundY - 52 * s.unit, 92 * s.unit, off * 0.095, p.mid, 14);
+  ridge(ctx, s, s.groundY + 14 * s.unit, 58 * s.unit, off * 0.18, p.near, 12);
 }
 
 function drawGround(ctx: CanvasRenderingContext2D, s: GameState, p: Palette): void {

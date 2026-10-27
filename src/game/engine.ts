@@ -103,12 +103,13 @@ export class Game {
 
   private makeClouds(): void {
     const s = this.state;
-    s.clouds = Array.from({ length: 6 }, (_, i) => ({
+    const count = Math.min(14, Math.max(8, Math.round(s.w / 140)));
+    s.clouds = Array.from({ length: count }, (_, i) => ({
       x: Math.random() * s.w,
-      y: s.groundY * randomRange(0.08, 0.42),
-      scale: randomRange(0.55, 1.5),
-      speed: randomRange(3, 11) * (i % 2 === 0 ? 1 : 0.7),
-      alpha: randomRange(0.1, 0.26),
+      y: s.groundY * randomRange(0.06, 0.38),
+      scale: randomRange(0.6, 1.8),
+      speed: randomRange(4, 14) * (i % 2 === 0 ? 1 : 0.75),
+      alpha: randomRange(0.12, 0.3),
     }));
   }
 
@@ -176,8 +177,8 @@ export class Game {
     s.player.squashX = 1;
     s.player.squashY = 1;
     s.player.idlePhase = 0;
-    this.spawnTimer = 1.5;
-    this.nextMilestone = 250;
+    this.spawnTimer = 1.6;
+    this.nextMilestone = 200;
     this.nextBlink = performance.now() + randomRange(1200, 3200);
     this.deadNotified = false;
     this.holding = false;
@@ -239,7 +240,7 @@ export class Game {
   private jump(): void {
     const s = this.state;
     const p = s.player;
-    p.vy = -905 * s.unit;
+    p.vy = -940 * s.unit;
     p.onGround = false;
     p.squashX = 0.8;
     p.squashY = 1.18;
@@ -309,7 +310,7 @@ export class Game {
     s.now = performance.now();
 
     if (s.phase === 'idle') {
-      s.distancePx += 34 * dt * s.unit;
+      s.distancePx += 46 * dt * s.unit;
       s.player.idlePhase += dt;
       this.updateClouds(dt);
       this.updateBlink();
@@ -331,7 +332,7 @@ export class Game {
     if (s.phase !== 'running') return;
 
     s.elapsedMs += dt * 1000;
-    const speedM = 330 + Math.min(550, s.distanceM * 0.46);
+    const speedM = 360 + Math.min(680, s.distanceM * 0.52);
     s.speedPx = speedM * s.unit;
     const meterPx = 18 * s.unit;
     s.distanceM += (s.speedPx * dt) / meterPx;
@@ -343,9 +344,9 @@ export class Game {
         s.groundY - s.player.h * 1.6,
         `${this.nextMilestone} м`,
         '#ffffff',
-        15 * s.unit,
+        16 * s.unit,
       );
-      this.nextMilestone += 250;
+      this.nextMilestone += 200;
     }
 
     this.spawnTimer -= dt;
@@ -361,8 +362,8 @@ export class Game {
       coin.phase += dt * 5.5;
       coin.bob += dt * 3.2;
     }
-    s.obstacles = s.obstacles.filter((o) => o.x + o.w > s.fieldX - 90 * s.unit);
-    s.coins = s.coins.filter((c) => c.x > s.fieldX - 70 * s.unit);
+    s.obstacles = s.obstacles.filter((o) => o.x + o.w > s.fieldX - 140 * s.unit);
+    s.coins = s.coins.filter((c) => c.x > s.fieldX - 120 * s.unit);
 
     this.checkCollisions();
     this.updateParticles(dt);
@@ -458,10 +459,11 @@ export class Game {
     const roll = Math.random();
 
     let kind: ObstacleKind = 'rock';
-    if (meters > 90 && roll > 0.72) kind = 'spikes';
-    if (meters > 180 && roll > 0.5) kind = 'cactus';
-    if (meters > 520 && roll > 0.9) kind = 'pillar';
-    if (meters < 70) kind = 'rock';
+    if (s.distanceM > 90 && roll > 0.68) kind = 'spikes';
+    if (s.distanceM > 160 && roll > 0.48) kind = 'cactus';
+    if (s.distanceM > 420 && roll > 0.88) kind = 'pillar';
+    if (s.distanceM > 620 && roll > 0.82) kind = 'pillar';
+    if (s.distanceM < 60) kind = 'rock';
 
     const dims = this.obstacleDims(kind);
     const obstacle: Obstacle = {
