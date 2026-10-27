@@ -1,0 +1,13 @@
+
+> kazari-jump@0.1.0 build
+> tsc --noEmit && vite build
+
+vite v7.3.7 building client environment for production...
+transforming...
+✓ 16 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                  2.50 kB │ gzip:  1.12 kB
+dist/assets/index-BAmdK1eC.css  31.28 kB │ gzip:  7.17 kB
+dist/assets/index-CEvja8hK.js   93.20 kB │ gzip: 29.61 kB
+✓ built in 268ms
