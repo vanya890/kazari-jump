@@ -258,10 +258,12 @@ body[data-screen='loading'] .hud {
   padding: calc(var(--safe-top) + 12px) 18px calc(var(--safe-bottom) + 14px);
   overflow-y: auto;
   overscroll-behavior: contain;
+  animation: menu-fade-in 0.6s ease-out;
   background:
-    radial-gradient(90% 42% at 50% 30%, rgba(124, 108, 255, 0.26), transparent 72%),
-    radial-gradient(70% 30% at 82% 12%, rgba(255, 122, 162, 0.14), transparent 70%),
-    linear-gradient(180deg, rgba(16, 15, 43, 0.72) 0%, rgba(16, 15, 43, 0.22) 32%, rgba(16, 15, 43, 0.6) 68%, rgba(10, 9, 26, 0.97) 100%);
+    radial-gradient(90% 42% at 50% 30%, rgba(124, 108, 255, 0.34), transparent 72%),
+    radial-gradient(70% 30% at 82% 12%, rgba(255, 122, 162, 0.18), transparent 70%),
+    radial-gradient(60% 28% at 18% 8%, rgba(94, 240, 188, 0.16), transparent 72%),
+    linear-gradient(180deg, rgba(16, 15, 43, 0.8) 0%, rgba(16, 15, 43, 0.28) 32%, rgba(16, 15, 43, 0.68) 68%, rgba(10, 9, 26, 0.98) 100%);
 }
 
 .menu-head {
@@ -334,12 +336,12 @@ body[data-screen='loading'] .hud {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
   flex: 1 1 auto;
   justify-content: center;
   min-height: 0;
-  padding-top: clamp(0px, 1.4vh, 12px);
-  width: min(100%, 720px);
+  padding-top: clamp(0px, 1.6vh, 14px);
+  width: min(100%, 880px);
   margin: 0 auto;
 }
 
@@ -357,12 +359,13 @@ body[data-screen='loading'] .hud {
   flex-direction: column;
   align-items: center;
   font-weight: 900;
-  font-size: clamp(42px, 13.5vw, 70px);
-  line-height: 0.82;
-  letter-spacing: -0.055em;
+  font-size: clamp(48px, 16vw, 92px);
+  line-height: 0.78;
+  letter-spacing: -0.06em;
   text-transform: uppercase;
-  margin: 2px 0 0;
+  margin: 4px 0 0;
   text-align: center;
+  animation: wordmark-in 0.7s ease-out;
 }
 
 .wordmark span {
@@ -382,9 +385,10 @@ body[data-screen='loading'] .hud {
   position: relative;
   display: grid;
   place-items: center;
-  width: min(62vw, 280px);
+  width: min(72vw, 340px);
   aspect-ratio: 1;
-  margin: clamp(-6px, -0.8vh, -2px) 0 clamp(-4px, -0.4vh, 0px);
+  margin: clamp(-10px, -1.2vh, -4px) 0 clamp(-6px, -0.6vh, -2px);
+  animation: hero-float 4.8s ease-in-out infinite;
 }
 
 .hero-glow {
@@ -2149,6 +2153,36 @@ body[data-screen='loading'] .hud {
   from {
     opacity: 0;
     transform: translateY(6px) scale(0.98);
+  }
+}
+
+@keyframes menu-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes wordmark-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes hero-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-12px);
   }
 }
 
