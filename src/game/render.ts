@@ -131,7 +131,7 @@ function mixPalette(a: Palette, b: Palette, t: number): Palette {
 }
 
 export function paletteFor(distanceM: number): Palette {
-  const span = 620;
+  const span = 720;
   const raw = (Math.max(0, distanceM) / span) % PALETTES.length;
   const index = Math.floor(raw);
   const next = (index + 1) % PALETTES.length;

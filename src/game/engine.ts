@@ -130,12 +130,13 @@ export class Game {
     s.dpr = dpr;
     s.unit = clamp(h / 800, 0.75, 1.35);
     s.groundY = h - clamp(h * 0.16, 76, 148);
-    s.fieldW = Math.min(w, 620);
+    const maxFieldW = w >= 1100 ? Math.min(w * 0.72, 980) : w >= 820 ? Math.min(w * 0.68, 820) : Math.min(w, 620);
+    s.fieldW = Math.max(320, maxFieldW);
     s.fieldX = (w - s.fieldW) / 2;
     s.player.x = s.fieldX + s.fieldW * 0.24;
     s.player.w = 46 * s.unit;
     s.player.h = 52 * s.unit;
-    s.player.x = clamp(s.player.x, s.fieldX + 54 * s.unit, w - 80);
+    s.player.x = clamp(s.player.x, s.fieldX + 54 * s.unit, s.fieldX + s.fieldW - 80 * s.unit);
 
     const deltaGround = s.groundY - oldGround;
     s.player.y += deltaGround;
@@ -453,7 +454,7 @@ export class Game {
   private spawnPattern(): void {
     const s = this.state;
     const u = s.unit;
-    const x = s.fieldX + s.fieldW + 70 * u;
+    const x = s.fieldX + s.fieldW + 90 * u;
     const meters = s.distanceM;
     const roll = Math.random();
 
