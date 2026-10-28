@@ -2421,6 +2421,40 @@ body[data-screen='loading'] .hud {
     right: auto;
     width: 100%;
     transform: translateX(-50%);
+    gap: clamp(6px, 1.15vh, 12px);
+  }
+
+  .menu-hero {
+    flex: 1 1 auto;
+    padding-top: 0;
+  }
+
+  .wordmark {
+    font-size: clamp(54px, 8vw, 72px);
+  }
+
+  .hero-stage {
+    width: min(42vw, 220px);
+    margin-top: -4px;
+    margin-bottom: -2px;
+  }
+
+  .hero-avatar {
+    width: clamp(112px, 20vh, 150px);
+    height: clamp(112px, 20vh, 150px);
+  }
+
+  .world-card {
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+
+  .menu-actions {
+    margin-top: 0;
+  }
+
+  .btn-play {
+    min-height: 56px;
   }
 }
 
