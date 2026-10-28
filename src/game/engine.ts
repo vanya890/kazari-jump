@@ -426,12 +426,20 @@ export class Game {
     this.callbacks.onWorld?.(index);
     if (chapter > 0) {
       const world = worldAt(chapter * WORLD_LENGTH);
+      const accent = ['#ffd24a', '#ff9a76', '#5ad4ff', '#ffb066'][index] ?? '#fff0c9';
+      const burstCount = this.state.quality === 'lite' ? 8 : 18;
       this.addFloater(
         this.state.fieldW * 0.62,
         this.state.groundY - this.state.player.h * 2.4,
         world.name,
-        '#fff0c9',
+        accent,
         19 * this.state.unit,
+      );
+      this.emitBurst(
+        this.state.fieldW * 0.66,
+        this.state.groundY - this.state.player.h * 1.65,
+        burstCount,
+        accent,
       );
     }
   }
@@ -519,47 +527,57 @@ export class Game {
     const u = s.unit;
     const x = s.fieldX + s.fieldW + 70 * u;
     const meters = s.distanceM;
+    const world = worldAt(meters).index;
     const roll = Math.random();
 
     let kind: ObstacleKind = 'rock';
-    if (s.distanceM > 90 && roll > 0.68) kind = 'spikes';
-    if (s.distanceM > 160 && roll > 0.48) kind = 'cactus';
-    if (s.distanceM > 420 && roll > 0.88) kind = 'pillar';
-    if (s.distanceM > 620 && roll > 0.82) kind = 'pillar';
-    if (s.distanceM > 720 && roll > 0.64) kind = 'crystal';
-    if (s.distanceM > 1440 && roll > 0.72) kind = 'driftwood';
-    if (s.distanceM < 60) kind = 'rock';
+    if (meters >= 60) {
+      if (world === 0) {
+        kind = roll > 0.72 ? 'spikes' : roll > 0.42 ? 'cactus' : 'rock';
+      } else if (world === 1) {
+        kind = roll > 0.62 ? 'driftwood' : roll > 0.36 ? 'spikes' : 'rock';
+      } else if (world === 2) {
+        kind = roll > 0.62 ? 'crystal' : roll > 0.32 ? 'pillar' : 'rock';
+      } else {
+        kind = roll > 0.74 ? 'pillar' : roll > 0.46 ? 'cactus' : roll > 0.22 ? 'spikes' : 'rock';
+      }
+    }
 
+    const obstacle = this.pushObstacle(x, kind);
+    const canDouble = meters > 260 && (kind === 'rock' || world === 2) && Math.random() < (world === 2 ? 0.22 : 0.28);
+    if (canDouble) {
+      const secondKind: ObstacleKind = world === 1 ? 'driftwood' : 'rock';
+      const gap = randomRange(54, 78) * u;
+      this.pushObstacle(x + obstacle.w + gap, secondKind, world === 1 ? 0.82 : 0.9);
+    }
+
+    if (world === 1 && kind === 'driftwood') {
+      this.spawnCoinLine(x + 150 * u, 5);
+    } else if (world === 2 && kind === 'pillar') {
+      this.spawnCoinArc(obstacle, 110);
+    } else if (Math.random() < (kind === 'spikes' || kind === 'crystal' ? 0.8 : 0.58)) {
+      this.spawnCoinArc(obstacle, canDouble ? 150 : 0);
+    } else if (Math.random() < 0.32) {
+      this.spawnCoinLine(x + 230 * u, 4);
+    }
+
+    const pressure = meters < 120 ? 1.28 : meters > 720 ? 0.92 : 1;
+    this.spawnTimer = randomRange(0.96, 1.56) * pressure;
+  }
+
+  private pushObstacle(x: number, kind: ObstacleKind, heightScale = 1): Obstacle {
+    const s = this.state;
     const dims = this.obstacleDims(kind);
     const obstacle: Obstacle = {
       x,
-      y: s.groundY - dims.h,
+      y: s.groundY - dims.h * heightScale,
       w: dims.w,
-      h: dims.h,
+      h: dims.h * heightScale,
       kind,
       seed: Math.random() * 1000,
     };
     s.obstacles.push(obstacle);
-
-    const canDouble = meters > 260 && kind === 'rock' && Math.random() < 0.28;
-    if (canDouble) {
-      const second = this.obstacleDims('rock');
-      const gap = randomRange(48, 72) * u;
-      s.obstacles.push({
-        x: x + obstacle.w + gap,
-        y: s.groundY - second.h * 0.9,
-        w: second.w,
-        h: second.h * 0.9,
-        kind: 'rock',
-        seed: Math.random() * 1000,
-      });
-    }
-
-    const arcChance = kind === 'spikes' || kind === 'crystal' ? 0.8 : 0.55;
-    if (Math.random() < arcChance) this.spawnCoinArc(obstacle, canDouble ? 150 : 0);
-    else if (Math.random() < 0.3) this.spawnCoinLine(x + 230 * u, 4);
-    const pressure = meters < 120 ? 1.28 : meters > 720 ? 0.92 : 1;
-    this.spawnTimer = randomRange(0.96, 1.56) * pressure;
+    return obstacle;
   }
 
   private obstacleDims(kind: ObstacleKind): { w: number; h: number } {
