@@ -412,7 +412,18 @@ export class UI {
 
   private auditMenuLayout(): void {
     if (!import.meta.env.DEV || this.state.screen !== 'menu' || this.state.modal || this.state.overlay) return;
-    const selectors = ['.menu-head', '.menu-hero', '.challenge-banner', '.menu-actions', '.menu-foot'];
+    const selectors = [
+      '.menu-head',
+      '.menu-hero',
+      '.world-card',
+      '.world-route',
+      '.menu-stats',
+      '.challenge-banner',
+      '.menu-actions',
+      '.btn-play',
+      '.menu-nav',
+      '.menu-foot',
+    ];
     const boxes = selectors
       .map((selector) => {
         const element = this.root.querySelector<HTMLElement>(selector);
@@ -422,9 +433,12 @@ export class UI {
       })
       .filter((box): box is { selector: string; top: number; bottom: number; left: number; right: number } => Boolean(box));
     const overlapping = boxes.flatMap((a, index) =>
-      boxes.slice(index + 1).filter((b) =>
-        a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top,
-      ).map((b) => `${a.selector} ↔ ${b.selector}`),
+      boxes.slice(index + 1).filter((b) => {
+        const aElement = this.root.querySelector<HTMLElement>(a.selector);
+        const bElement = this.root.querySelector<HTMLElement>(b.selector);
+        const nested = Boolean(aElement && bElement && (aElement.contains(bElement) || bElement.contains(aElement)));
+        return !nested && a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
+      }).map((b) => `${a.selector} ↔ ${b.selector}`),
     );
     const warning = overlapping.join(', ');
     if (warning && warning !== this.lastLayoutWarning) {

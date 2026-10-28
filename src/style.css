@@ -684,7 +684,7 @@ body[data-screen='loading'] .hud {
   flex-direction: column;
   gap: 9px;
   flex: none;
-  margin-top: clamp(2px, 1vh, 10px);
+  margin-top: clamp(8px, 1.4vh, 14px);
 }
 
 .btn {
