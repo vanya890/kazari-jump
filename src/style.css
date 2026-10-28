@@ -282,11 +282,12 @@ body[data-screen='loading'] .hud {
 
 .screen-menu {
   pointer-events: auto;
-  display: flex;
-  flex-direction: column;
-  gap: clamp(8px, 1.7vh, 18px);
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto auto;
+  align-content: start;
+  row-gap: clamp(6px, 1.4vh, 14px);
   padding: calc(var(--safe-top) + 12px) 18px calc(var(--safe-bottom) + 14px);
-  overflow-y: auto;
+  overflow: hidden;
   overscroll-behavior: contain;
   animation: menu-fade-in 0.6s ease-out;
   background:
@@ -415,9 +416,9 @@ body[data-screen='loading'] .hud {
   position: relative;
   display: grid;
   place-items: center;
-  width: min(72vw, 340px);
+  width: min(72vw, 340px, 22vh);
   aspect-ratio: 1;
-  margin: clamp(-10px, -1.2vh, -4px) 0 clamp(-6px, -0.6vh, -2px);
+  margin: 0;
   animation: hero-float 4.8s ease-in-out infinite;
 }
 
@@ -2425,7 +2426,8 @@ body[data-screen='loading'] .hud {
   }
 
   .menu-hero {
-    flex: 1 1 auto;
+    flex: 0 1 auto;
+    min-height: 0;
     padding-top: 0;
   }
 
@@ -2434,9 +2436,8 @@ body[data-screen='loading'] .hud {
   }
 
   .hero-stage {
-    width: min(42vw, 220px);
-    margin-top: -4px;
-    margin-bottom: -2px;
+    width: min(42vw, 220px, 20vh);
+    margin: 0;
   }
 
   .hero-avatar {
@@ -2485,8 +2486,16 @@ body[data-screen='loading'] .hud {
 }
 
 @media (max-height: 700px) {
+  .screen-menu {
+    row-gap: clamp(4px, 1vh, 7px);
+  }
+
   .menu-tagline {
     display: none;
+  }
+
+  .menu-hero {
+    gap: 4px;
   }
 
   .wordmark {
@@ -2494,12 +2503,13 @@ body[data-screen='loading'] .hud {
   }
 
   .hero-avatar {
-    width: clamp(88px, 18vh, 124px);
-    height: clamp(88px, 18vh, 124px);
+    width: clamp(76px, 14vh, 108px);
+    height: clamp(76px, 14vh, 108px);
   }
 
   .hero-stage {
-    width: min(50vw, 160px);
+    width: min(50vw, 160px, 16vh);
+    margin: 0;
   }
 
   .world-card {
@@ -2512,7 +2522,7 @@ body[data-screen='loading'] .hud {
   }
 
   .menu-foot {
-    display: none;
+    margin-top: 0;
   }
 
   .btn-play {
@@ -2524,25 +2534,115 @@ body[data-screen='loading'] .hud {
   }
 }
 
-@media (max-height: 600px) {
+@media (orientation: landscape) and (max-height: 600px) {
+  .screen-menu {
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    grid-template-areas:
+      'head head'
+      'hero actions'
+      'foot foot';
+    column-gap: clamp(12px, 2.5vw, 24px);
+    row-gap: 5px;
+    padding-top: calc(var(--safe-top) + 8px);
+    padding-bottom: calc(var(--safe-bottom) + 8px);
+  }
+
+  .menu-head { grid-area: head; }
+
   .menu-hero {
-    gap: 0;
+    grid-area: hero;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    width: 100%;
+    padding: 0;
+    min-height: 0;
+  }
+
+  .menu-tagline { display: none; }
+
+  .wordmark {
+    font-size: clamp(28px, 8vh, 44px);
+    margin: 0;
   }
 
   .hero-stage {
-    display: none;
+    width: min(100%, 18vh, 120px);
+    aspect-ratio: 1;
+    height: auto;
+    margin: 0;
+  }
+
+  .hero-avatar {
+    width: clamp(48px, 12vh, 72px);
+    height: clamp(48px, 12vh, 72px);
   }
 
   .world-card {
-    padding: 8px 11px;
+    padding: 6px 9px;
+  }
+
+  .world-card-foot { display: none; }
+  .world-progress { margin-top: 5px; }
+
+  .world-route {
+    margin-top: 2px;
+    min-height: 24px;
+  }
+
+  .route-stop {
+    width: 24px;
+    height: 24px;
   }
 
   .menu-stats {
-    margin-top: 6px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 4px;
+    margin-top: 2px;
   }
 
+  .stat { padding: 5px 3px; }
+  .stat-value { font-size: clamp(13px, 2.8vw, 16px); }
+
+  .challenge-banner { padding: 6px 9px; }
+
   .menu-actions {
-    margin-top: 0;
+    grid-area: actions;
+    display: flex;
+    flex-direction: column;
+    align-self: center;
+    gap: 6px;
+    margin: 0;
+  }
+
+  .btn-play { min-height: 46px; }
+
+  .menu-nav {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 5px;
+  }
+
+  .nav-btn {
+    min-height: 40px;
+    flex-direction: row;
+    gap: 4px;
+    padding: 5px 3px;
+    font-size: 9px;
+  }
+
+  .nav-btn .ico {
+    width: 16px;
+    height: 16px;
+  }
+
+  .menu-foot {
+    grid-area: foot;
+    min-height: 0;
+    padding: 0;
+    margin: 0;
   }
 }
 
