@@ -240,6 +240,55 @@ function drawSky(ctx: CanvasRenderingContext2D, s: GameState, p: Palette): void 
   ctx.globalAlpha = 1;
 }
 
+function drawWorldWeather(ctx: CanvasRenderingContext2D, s: GameState, p: Palette): void {
+  const world = worldAt(s.distanceM);
+  const u = s.unit;
+  const phase = s.now * 0.001;
+  ctx.save();
+  ctx.globalAlpha = 0.24;
+
+  if (world.landmark === 'lanterns') {
+    ctx.fillStyle = p.sun;
+    for (let i = 0; i < 12; i += 1) {
+      const x = ((i * 97 + s.distancePx * 0.08) % (s.w + 24 * u)) - 12 * u;
+      const y = s.groundY * (0.22 + ((i * 0.071) % 0.46)) + Math.sin(phase * 1.4 + i) * 5 * u;
+      ctx.beginPath();
+      ctx.arc(x, y, (1.4 + (i % 3) * 0.6) * u, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  } else if (world.landmark === 'torii') {
+    ctx.fillStyle = p.haze;
+    for (let i = 0; i < 10; i += 1) {
+      const x = ((i * 131 - s.distancePx * 0.16) % (s.w + 32 * u)) - 16 * u;
+      const y = s.groundY * (0.16 + ((i * 0.083) % 0.5)) + Math.sin(phase + i) * 8 * u;
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(Math.sin(phase * 0.8 + i) * 0.7);
+      ctx.fillRect(-2 * u, -1 * u, 4 * u, 2 * u);
+      ctx.restore();
+    }
+  } else if (world.landmark === 'peaks') {
+    ctx.strokeStyle = p.cloud;
+    ctx.lineWidth = Math.max(1, 1.5 * u);
+    for (let i = 0; i < 6; i += 1) {
+      const x = ((i * 173 + s.distancePx * 0.035) % (s.w + 110 * u)) - 55 * u;
+      const y = s.groundY * (0.18 + (i % 3) * 0.08);
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.quadraticCurveTo(x + 24 * u, y - 7 * u, x + 52 * u, y);
+      ctx.stroke();
+    }
+  } else {
+    ctx.fillStyle = p.sun;
+    for (let i = 0; i < 14; i += 1) {
+      const x = ((i * 113 - s.distancePx * 0.22) % (s.w + 20 * u)) - 10 * u;
+      const y = s.groundY * (0.12 + ((i * 0.097) % 0.56)) + Math.sin(phase * 0.7 + i) * 3 * u;
+      ctx.fillRect(x, y, (1 + (i % 2)) * u, (1 + (i % 2)) * u);
+    }
+  }
+  ctx.restore();
+}
+
 function ridge(
   ctx: CanvasRenderingContext2D,
   s: GameState,
@@ -682,6 +731,7 @@ export function renderGame(ctx: CanvasRenderingContext2D, s: GameState): void {
   ctx.translate(shakeX, shakeY);
 
   drawSky(ctx, s, p);
+  drawWorldWeather(ctx, s, p);
   drawMountains(ctx, s, p);
   drawLandmark(ctx, s, p);
   drawSpeedLines(ctx, s);
