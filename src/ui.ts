@@ -207,6 +207,7 @@ export class UI {
   private readonly toastEl: HTMLElement | null;
   private toastTimer = 0;
   private focusKey = '';
+  private hudShield = false;
 
   constructor(root: HTMLElement, handlers: UIHandlers, initial: UiState) {
     this.root = root;
@@ -322,10 +323,13 @@ export class UI {
 
   setHud(distance: number, coins: number, bump = false, shield = false): void {
     const distanceEl = document.getElementById('hud-distance');
-    const relicEl = document.getElementById('hud-relic');
-    const relicLabel = document.getElementById('hud-relic-label');
-    if (relicEl) relicEl.toggleAttribute('hidden', !shield);
-    if (relicLabel) relicLabel.textContent = makeT(this.state.lang)('hud.shield');
+    if (shield !== this.hudShield) {
+      const relicEl = document.getElementById('hud-relic');
+      const relicLabel = document.getElementById('hud-relic-label');
+      if (relicEl) relicEl.toggleAttribute('hidden', !shield);
+      if (relicLabel) relicLabel.textContent = makeT(this.state.lang)('hud.shield');
+      this.hudShield = shield;
+    }
     const coinsEl = document.getElementById('hud-run-coins');
     if (distanceEl) {
       const formatted = formatNumber(this.state.lang, distance);
@@ -357,6 +361,7 @@ export class UI {
   }
 
   render(): void {
+    this.hudShield = false;
     const scroller = this.root.querySelector<HTMLElement>('.sheet-scroll');
     const scrollTop = scroller?.scrollTop ?? 0;
     const active = document.activeElement as HTMLElement | null;

@@ -1,6 +1,7 @@
 import type { Lang } from '../types';
 
 export const WORLD_LENGTH = 720;
+export const WORLD_TRANSITION = 160;
 
 export interface World {
   index: number;
@@ -65,4 +66,27 @@ export function worldAt(distanceM: number, lang: Lang = 'ru'): World {
 
 export function worldChapterAt(distanceM: number): number {
   return Math.floor(Math.max(0, distanceM) / WORLD_LENGTH);
+}
+
+export interface WorldTransition {
+  currentChapter: number;
+  currentIndex: number;
+  nextChapter: number;
+  nextIndex: number;
+  progress: number;
+}
+
+export function worldTransitionAt(distanceM: number): WorldTransition {
+  const safeDistance = Math.max(0, distanceM);
+  const currentChapter = worldChapterAt(safeDistance);
+  const chapterProgress = safeDistance % WORLD_LENGTH;
+  const transitionStart = WORLD_LENGTH - WORLD_TRANSITION;
+  const progress = chapterProgress < transitionStart ? 0 : (chapterProgress - transitionStart) / WORLD_TRANSITION;
+  return {
+    currentChapter,
+    currentIndex: currentChapter % WORLD_ATLAS.length,
+    nextChapter: currentChapter + 1,
+    nextIndex: (currentChapter + 1) % WORLD_ATLAS.length,
+    progress: Math.min(1, Math.max(0, progress)),
+  };
 }

@@ -21,6 +21,7 @@ export function paintAvatar(canvas: HTMLCanvasElement, skinId: string): void {
     w: size,
     h: size,
     dpr,
+    quality: 'lite',
     unit,
     fieldX: 0,
     fieldW: size,

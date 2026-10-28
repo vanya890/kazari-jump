@@ -48,6 +48,7 @@ export class Game {
       w: 360,
       h: 640,
       dpr: 1,
+      quality: 'full',
       unit: 1,
       fieldX: 0,
       fieldW: 360,
@@ -125,7 +126,10 @@ export class Game {
     const rect = this.canvas.getBoundingClientRect();
     const w = Math.max(240, rect.width || window.innerWidth);
     const h = Math.max(320, rect.height || window.innerHeight);
-    const dpr = clamp(window.devicePixelRatio || 1, 1, 2.5);
+    const deviceMemory = Number((navigator as Navigator & { deviceMemory?: number }).deviceMemory ?? 4);
+    const cores = navigator.hardwareConcurrency || 4;
+    const quality = deviceMemory <= 2 || cores <= 2 || w < 360 ? 'lite' : 'full';
+    const dpr = clamp(window.devicePixelRatio || 1, 1, quality === 'lite' ? 1.5 : 2);
     const oldGround = s.groundY;
     const oldW = s.w;
 
@@ -136,6 +140,7 @@ export class Game {
     s.w = w;
     s.h = h;
     s.dpr = dpr;
+    s.quality = quality;
     s.unit = clamp(h / 800, 0.75, 1.35);
     s.groundY = h - clamp(h * 0.16, 76, 148);
     s.fieldW = w;
@@ -389,9 +394,22 @@ export class Game {
       relic.phase += dt * 4.2;
       relic.bob += dt * 2.6;
     }
-    s.obstacles = s.obstacles.filter((o) => o.x + o.w > s.fieldX - 140 * s.unit);
-    s.coins = s.coins.filter((c) => c.x > s.fieldX - 120 * s.unit);
-    s.relics = s.relics.filter((r) => r.x > s.fieldX - 120 * s.unit);
+    const leftEdge = s.fieldX - 2 * s.unit;
+    let write = 0;
+    for (const obstacle of s.obstacles) {
+      if (obstacle.x + obstacle.w > leftEdge) s.obstacles[write++] = obstacle;
+    }
+    s.obstacles.length = write;
+    write = 0;
+    for (const coin of s.coins) {
+      if (coin.x + coin.r > leftEdge) s.coins[write++] = coin;
+    }
+    s.coins.length = write;
+    write = 0;
+    for (const relic of s.relics) {
+      if (relic.x + relic.r > leftEdge) s.relics[write++] = relic;
+    }
+    s.relics.length = write;
 
     this.checkCollisions();
     this.updateParticles(dt);
@@ -752,8 +770,16 @@ export class Game {
       particle.rot += particle.vr * dt;
       particle.life -= dt;
     }
-    if (s.particles.length > 260) s.particles.splice(0, s.particles.length - 260);
-    s.particles = s.particles.filter((particle) => particle.life > 0);
+    const left = s.fieldX - 24 * s.unit;
+    const right = s.fieldX + s.fieldW + 24 * s.unit;
+    let write = 0;
+    for (const particle of s.particles) {
+      if (particle.life > 0 && particle.x > left && particle.x < right && particle.y < s.h + 24 * s.unit) {
+        s.particles[write++] = particle;
+      }
+    }
+    if (write > 220) s.particles.copyWithin(0, write - 220, write);
+    s.particles.length = Math.min(write, 220);
   }
 
   private updateFloaters(dt: number): void {
@@ -763,7 +789,13 @@ export class Game {
       floater.vy *= 0.97;
       floater.life -= dt;
     }
-    s.floaters = s.floaters.filter((floater) => floater.life > 0);
+    const left = s.fieldX - 40 * s.unit;
+    const right = s.fieldX + s.fieldW + 40 * s.unit;
+    let write = 0;
+    for (const floater of s.floaters) {
+      if (floater.life > 0 && floater.x > left && floater.x < right) s.floaters[write++] = floater;
+    }
+    s.floaters.length = write;
   }
 
   destroy(): void {

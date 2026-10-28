@@ -1,5 +1,5 @@
 import type { GameState, Obstacle, Particle } from './types';
-import { WORLD_LENGTH, worldAt } from './worlds';
+import { WORLD_ATLAS, worldTransitionAt } from './worlds';
 import { drawPlayer } from './player';
 
 export interface Palette {
@@ -110,6 +110,11 @@ function blend(a: string, b: string, t: number): string {
   return `rgb(${r},${g},${bl})`;
 }
 
+function smoothstep(t: number): number {
+  const clamped = Math.min(1, Math.max(0, t));
+  return clamped * clamped * (3 - 2 * clamped);
+}
+
 function mixPalette(a: Palette, b: Palette, t: number): Palette {
   return {
     skyTop: blend(a.skyTop, b.skyTop, t),
@@ -132,13 +137,11 @@ function mixPalette(a: Palette, b: Palette, t: number): Palette {
 }
 
 export function paletteFor(distanceM: number): Palette {
-  const span = WORLD_LENGTH;
-  const raw = (Math.max(0, distanceM) / span) % PALETTES.length;
-  const index = Math.floor(raw);
-  const next = (index + 1) % PALETTES.length;
-  const t = raw - index;
-  const eased = t * t * (3 - 2 * t);
-  return mixPalette(PALETTES[index], PALETTES[next], eased);
+  const transition = worldTransitionAt(distanceM);
+  const current = PALETTES[transition.currentIndex];
+  const next = PALETTES[transition.nextIndex];
+  if (!current || !next || transition.progress <= 0) return current ?? PALETTES[0];
+  return mixPalette(current, next, smoothstep(transition.progress));
 }
 
 const STARS = Array.from({ length: 64 }, (_, i) => {
@@ -190,7 +193,8 @@ function drawSky(ctx: CanvasRenderingContext2D, s: GameState, p: Palette): void 
   ctx.fillRect(0, 0, s.w, s.groundY + 2);
 
   if (p.night > 0.05) {
-    for (let i = 0; i < STARS.length; i += 1) {
+    const starCount = s.quality === 'lite' ? 28 : STARS.length;
+    for (let i = 0; i < starCount; i += 1) {
       const star = STARS[i];
       const twinkle = 0.55 + 0.45 * Math.sin(s.now * 0.0016 + star.phase);
       ctx.globalAlpha = p.night * (0.35 + twinkle * 0.65);
@@ -225,7 +229,9 @@ function drawSky(ctx: CanvasRenderingContext2D, s: GameState, p: Palette): void 
   }
   ctx.globalAlpha = 1;
 
-  for (const cloud of s.clouds) {
+  const cloudCount = s.quality === 'lite' ? Math.min(6, s.clouds.length) : s.clouds.length;
+  for (let i = 0; i < cloudCount; i += 1) {
+    const cloud = s.clouds[i];
     ctx.globalAlpha = cloud.alpha * (0.6 + p.night * 0.18);
     ctx.fillStyle = p.cloud;
     const w = 64 * cloud.scale * s.unit;
@@ -241,51 +247,61 @@ function drawSky(ctx: CanvasRenderingContext2D, s: GameState, p: Palette): void 
 }
 
 function drawWorldWeather(ctx: CanvasRenderingContext2D, s: GameState, p: Palette): void {
-  const world = worldAt(s.distanceM);
+  if (s.quality === 'lite') return;
+  const transition = worldTransitionAt(s.distanceM);
+  const world = WORLD_ATLAS[transition.currentIndex];
+  const nextWorld = WORLD_ATLAS[transition.nextIndex];
+  if (!world || !nextWorld) return;
   const u = s.unit;
   const phase = s.now * 0.001;
-  ctx.save();
-  ctx.globalAlpha = 0.24;
+  const fade = smoothstep(transition.progress);
 
-  if (world.landmark === 'lanterns') {
-    ctx.fillStyle = p.sun;
-    for (let i = 0; i < 12; i += 1) {
-      const x = ((i * 97 + s.distancePx * 0.08) % (s.w + 24 * u)) - 12 * u;
-      const y = s.groundY * (0.22 + ((i * 0.071) % 0.46)) + Math.sin(phase * 1.4 + i) * 5 * u;
-      ctx.beginPath();
-      ctx.arc(x, y, (1.4 + (i % 3) * 0.6) * u, 0, Math.PI * 2);
-      ctx.fill();
+  const drawWeather = (kind: typeof world.landmark, alpha: number): void => {
+    ctx.globalAlpha = 0.24 * alpha;
+    if (kind === 'lanterns') {
+      ctx.fillStyle = p.sun;
+      for (let i = 0; i < 12; i += 1) {
+        const x = ((i * 97 + s.distancePx * 0.08) % (s.w + 24 * u)) - 12 * u;
+        const y = s.groundY * (0.22 + ((i * 0.071) % 0.46)) + Math.sin(phase * 1.4 + i) * 5 * u;
+        ctx.beginPath();
+        ctx.arc(x, y, (1.4 + (i % 3) * 0.6) * u, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    } else if (kind === 'torii') {
+      ctx.fillStyle = p.haze;
+      for (let i = 0; i < 10; i += 1) {
+        const x = ((i * 131 - s.distancePx * 0.16) % (s.w + 32 * u)) - 16 * u;
+        const y = s.groundY * (0.16 + ((i * 0.083) % 0.5)) + Math.sin(phase + i) * 8 * u;
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.rotate(Math.sin(phase * 0.8 + i) * 0.7);
+        ctx.fillRect(-2 * u, -1 * u, 4 * u, 2 * u);
+        ctx.restore();
+      }
+    } else if (kind === 'peaks') {
+      ctx.strokeStyle = p.cloud;
+      ctx.lineWidth = Math.max(1, 1.5 * u);
+      for (let i = 0; i < 6; i += 1) {
+        const x = ((i * 173 + s.distancePx * 0.035) % (s.w + 110 * u)) - 55 * u;
+        const y = s.groundY * (0.18 + (i % 3) * 0.08);
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        ctx.quadraticCurveTo(x + 24 * u, y - 7 * u, x + 52 * u, y);
+        ctx.stroke();
+      }
+    } else {
+      ctx.fillStyle = p.sun;
+      for (let i = 0; i < 14; i += 1) {
+        const x = ((i * 113 - s.distancePx * 0.22) % (s.w + 20 * u)) - 10 * u;
+        const y = s.groundY * (0.12 + ((i * 0.097) % 0.56)) + Math.sin(phase * 0.7 + i) * 3 * u;
+        ctx.fillRect(x, y, (1 + (i % 2)) * u, (1 + (i % 2)) * u);
+      }
     }
-  } else if (world.landmark === 'torii') {
-    ctx.fillStyle = p.haze;
-    for (let i = 0; i < 10; i += 1) {
-      const x = ((i * 131 - s.distancePx * 0.16) % (s.w + 32 * u)) - 16 * u;
-      const y = s.groundY * (0.16 + ((i * 0.083) % 0.5)) + Math.sin(phase + i) * 8 * u;
-      ctx.save();
-      ctx.translate(x, y);
-      ctx.rotate(Math.sin(phase * 0.8 + i) * 0.7);
-      ctx.fillRect(-2 * u, -1 * u, 4 * u, 2 * u);
-      ctx.restore();
-    }
-  } else if (world.landmark === 'peaks') {
-    ctx.strokeStyle = p.cloud;
-    ctx.lineWidth = Math.max(1, 1.5 * u);
-    for (let i = 0; i < 6; i += 1) {
-      const x = ((i * 173 + s.distancePx * 0.035) % (s.w + 110 * u)) - 55 * u;
-      const y = s.groundY * (0.18 + (i % 3) * 0.08);
-      ctx.beginPath();
-      ctx.moveTo(x, y);
-      ctx.quadraticCurveTo(x + 24 * u, y - 7 * u, x + 52 * u, y);
-      ctx.stroke();
-    }
-  } else {
-    ctx.fillStyle = p.sun;
-    for (let i = 0; i < 14; i += 1) {
-      const x = ((i * 113 - s.distancePx * 0.22) % (s.w + 20 * u)) - 10 * u;
-      const y = s.groundY * (0.12 + ((i * 0.097) % 0.56)) + Math.sin(phase * 0.7 + i) * 3 * u;
-      ctx.fillRect(x, y, (1 + (i % 2)) * u, (1 + (i % 2)) * u);
-    }
-  }
+  };
+
+  ctx.save();
+  drawWeather(world.landmark, 1 - fade);
+  if (fade > 0) drawWeather(nextWorld.landmark, fade);
   ctx.restore();
 }
 
@@ -321,76 +337,83 @@ function drawMountains(ctx: CanvasRenderingContext2D, s: GameState, p: Palette):
 }
 
 function drawLandmark(ctx: CanvasRenderingContext2D, s: GameState, p: Palette): void {
-  const world = worldAt(s.distanceM);
+  const transition = worldTransitionAt(s.distanceM);
+  const current = WORLD_ATLAS[transition.currentIndex];
+  const next = WORLD_ATLAS[transition.nextIndex];
+  if (!current || !next) return;
   const u = s.unit;
   const drift = (s.distancePx * 0.12) % (s.w + 260 * u);
   const x = s.w + 150 * u - drift;
   const base = s.groundY - 48 * u;
-  ctx.save();
-  ctx.globalAlpha = 0.42;
-  ctx.fillStyle = p.near;
-  ctx.strokeStyle = p.groundLine;
-  ctx.lineWidth = 2 * u;
+  const fade = smoothstep(transition.progress);
 
-  if (world.landmark === 'lanterns') {
-    for (let i = 0; i < 3; i += 1) {
-      const lx = x + i * 72 * u;
+  const drawOne = (landmark: typeof current.landmark, alpha: number): void => {
+    ctx.save();
+    ctx.globalAlpha = 0.42 * alpha;
+    ctx.fillStyle = p.near;
+    ctx.strokeStyle = p.groundLine;
+    ctx.lineWidth = 2 * u;
+    if (landmark === 'lanterns') {
+      for (let i = 0; i < 3; i += 1) {
+        const lx = x + i * 72 * u;
+        ctx.beginPath();
+        ctx.moveTo(lx, base);
+        ctx.lineTo(lx, base - (50 + i * 14) * u);
+        ctx.stroke();
+        ctx.fillStyle = p.sun;
+        ctx.globalAlpha = 0.22 * alpha;
+        ctx.beginPath();
+        ctx.arc(lx, base - (58 + i * 14) * u, 7 * u, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    } else if (landmark === 'torii') {
+      const width = 116 * u;
+      const top = base - 104 * u;
+      ctx.strokeStyle = p.haze;
+      ctx.lineWidth = 8 * u;
       ctx.beginPath();
-      ctx.moveTo(lx, base);
-      ctx.lineTo(lx, base - (50 + i * 14) * u);
+      ctx.moveTo(x - width / 2, base);
+      ctx.lineTo(x - width / 2 + 14 * u, top + 20 * u);
+      ctx.moveTo(x + width / 2, base);
+      ctx.lineTo(x + width / 2 - 14 * u, top + 20 * u);
+      ctx.moveTo(x - width / 2 - 10 * u, top + 14 * u);
+      ctx.lineTo(x + width / 2 + 10 * u, top + 14 * u);
+      ctx.moveTo(x - width / 2 - 3 * u, top + 34 * u);
+      ctx.lineTo(x + width / 2 + 3 * u, top + 34 * u);
       ctx.stroke();
-      ctx.fillStyle = p.sun;
-      ctx.globalAlpha = 0.22;
+    } else if (landmark === 'peaks') {
+      ctx.fillStyle = p.groundLine;
       ctx.beginPath();
-      ctx.arc(lx, base - (58 + i * 14) * u, 7 * u, 0, Math.PI * 2);
+      ctx.moveTo(x - 140 * u, base);
+      ctx.lineTo(x - 52 * u, base - 112 * u);
+      ctx.lineTo(x + 12 * u, base - 40 * u);
+      ctx.lineTo(x + 82 * u, base - 138 * u);
+      ctx.lineTo(x + 164 * u, base);
+      ctx.closePath();
       ctx.fill();
-      ctx.fillStyle = p.near;
-      ctx.globalAlpha = 0.42;
+      ctx.fillStyle = p.cloud;
+      ctx.globalAlpha = 0.18 * alpha;
+      ctx.fillRect(x - 82 * u, base - 84 * u, 40 * u, 7 * u);
+      ctx.fillRect(x + 44 * u, base - 105 * u, 52 * u, 7 * u);
+    } else {
+      ctx.strokeStyle = p.sun;
+      ctx.lineWidth = 12 * u;
+      ctx.beginPath();
+      ctx.arc(x, base, 74 * u, Math.PI, Math.PI * 2);
+      ctx.stroke();
+      ctx.lineWidth = 4 * u;
+      ctx.beginPath();
+      ctx.moveTo(x - 74 * u, base);
+      ctx.lineTo(x - 74 * u, base + 18 * u);
+      ctx.moveTo(x + 74 * u, base);
+      ctx.lineTo(x + 74 * u, base + 18 * u);
+      ctx.stroke();
     }
-  } else if (world.landmark === 'torii') {
-    const width = 116 * u;
-    const top = base - 104 * u;
-    ctx.strokeStyle = p.haze;
-    ctx.lineWidth = 8 * u;
-    ctx.beginPath();
-    ctx.moveTo(x - width / 2, base);
-    ctx.lineTo(x - width / 2 + 14 * u, top + 20 * u);
-    ctx.moveTo(x + width / 2, base);
-    ctx.lineTo(x + width / 2 - 14 * u, top + 20 * u);
-    ctx.moveTo(x - width / 2 - 10 * u, top + 14 * u);
-    ctx.lineTo(x + width / 2 + 10 * u, top + 14 * u);
-    ctx.moveTo(x - width / 2 - 3 * u, top + 34 * u);
-    ctx.lineTo(x + width / 2 + 3 * u, top + 34 * u);
-    ctx.stroke();
-  } else if (world.landmark === 'peaks') {
-    ctx.fillStyle = p.groundLine;
-    ctx.beginPath();
-    ctx.moveTo(x - 140 * u, base);
-    ctx.lineTo(x - 52 * u, base - 112 * u);
-    ctx.lineTo(x + 12 * u, base - 40 * u);
-    ctx.lineTo(x + 82 * u, base - 138 * u);
-    ctx.lineTo(x + 164 * u, base);
-    ctx.closePath();
-    ctx.fill();
-    ctx.fillStyle = p.cloud;
-    ctx.globalAlpha = 0.18;
-    ctx.fillRect(x - 82 * u, base - 84 * u, 40 * u, 7 * u);
-    ctx.fillRect(x + 44 * u, base - 105 * u, 52 * u, 7 * u);
-  } else {
-    ctx.strokeStyle = p.sun;
-    ctx.lineWidth = 12 * u;
-    ctx.beginPath();
-    ctx.arc(x, base, 74 * u, Math.PI, Math.PI * 2);
-    ctx.stroke();
-    ctx.lineWidth = 4 * u;
-    ctx.beginPath();
-    ctx.moveTo(x - 74 * u, base);
-    ctx.lineTo(x - 74 * u, base + 18 * u);
-    ctx.moveTo(x + 74 * u, base);
-    ctx.lineTo(x + 74 * u, base + 18 * u);
-    ctx.stroke();
-  }
-  ctx.restore();
+    ctx.restore();
+  };
+
+  drawOne(current.landmark, 1 - fade);
+  if (fade > 0) drawOne(next.landmark, fade);
 }
 
 function drawGround(ctx: CanvasRenderingContext2D, s: GameState, p: Palette): void {
@@ -734,7 +757,7 @@ export function renderGame(ctx: CanvasRenderingContext2D, s: GameState): void {
   drawWorldWeather(ctx, s, p);
   drawMountains(ctx, s, p);
   drawLandmark(ctx, s, p);
-  drawSpeedLines(ctx, s);
+  if (s.quality === 'full') drawSpeedLines(ctx, s);
   drawGround(ctx, s, p);
 
   for (const obstacle of s.obstacles) drawObstacle(ctx, obstacle, s, p);
@@ -754,8 +777,10 @@ export function renderGame(ctx: CanvasRenderingContext2D, s: GameState): void {
     ctx.fillStyle = floater.color;
     ctx.font = `800 ${floater.size}px "Segoe UI", system-ui, sans-serif`;
     ctx.textAlign = 'center';
-    ctx.shadowColor = 'rgba(0,0,0,0.35)';
-    ctx.shadowBlur = 6;
+    if (s.quality === 'full') {
+      ctx.shadowColor = 'rgba(0,0,0,0.35)';
+      ctx.shadowBlur = 6;
+    }
     ctx.fillText(floater.text, floater.x, floater.y);
     ctx.shadowBlur = 0;
     ctx.globalAlpha = 1;

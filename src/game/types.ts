@@ -1,4 +1,5 @@
 export type Phase = 'idle' | 'running' | 'paused' | 'dead';
+export type RenderQuality = 'full' | 'lite';
 
 export interface Player {
   x: number;
@@ -80,6 +81,7 @@ export interface GameState {
   w: number;
   h: number;
   dpr: number;
+  quality: RenderQuality;
   unit: number;
   fieldX: number;
   fieldW: number;
