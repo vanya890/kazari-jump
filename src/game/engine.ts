@@ -5,6 +5,7 @@ import type {
   Obstacle,
   ObstacleKind,
   RunSnapshot,
+  Relic,
 } from './types';
 import { renderGame } from './render';
 import { sfx } from '../audio';
@@ -31,6 +32,7 @@ export class Game {
   private spawnTimer = 1.6;
   private nextBlink = 0;
   private nextMilestone = 250;
+  private nextRelic = 480;
   private currentWorld = -1;
   private resizeObserver: ResizeObserver | null = null;
   private deadNotified = false;
@@ -67,7 +69,9 @@ export class Game {
       },
       obstacles: [],
       coins: [],
+      relics: [],
       particles: [],
+      shield: false,
       floaters: [],
       clouds: [],
       distancePx: 0,
@@ -160,7 +164,9 @@ export class Game {
     const s = this.state;
     s.obstacles = [];
     s.coins = [];
+    s.relics = [];
     s.particles = [];
+    s.shield = false;
     s.floaters = [];
     s.distancePx = 0;
     s.distanceM = 0;
@@ -184,6 +190,7 @@ export class Game {
     s.player.idlePhase = 0;
     this.spawnTimer = 1.6;
     this.nextMilestone = 200;
+    this.nextRelic = 480;
     this.nextBlink = performance.now() + randomRange(1200, 3200);
     this.deadNotified = false;
     this.holding = false;
@@ -198,7 +205,9 @@ export class Game {
     s.phase = 'idle';
     s.obstacles = [];
     s.coins = [];
+    s.relics = [];
     s.particles = [];
+    s.shield = false;
     s.floaters = [];
     s.distanceM = 0;
     s.speedPx = 0;
@@ -327,6 +336,7 @@ export class Game {
     if (s.phase === 'dead') {
       s.deathAge += dt;
       this.updatePlayerPhysics(dt, true);
+      this.updateRelics(dt);
       this.updateParticles(dt);
       this.updateClouds(dt);
       s.shake *= Math.pow(0.001, dt);
@@ -353,6 +363,10 @@ export class Game {
       );
       this.nextMilestone += 200;
     }
+    if (s.distanceM >= this.nextRelic) {
+      this.spawnRelic(s.fieldX + s.fieldW + 180 * s.unit);
+      this.nextRelic += 480;
+    }
 
     const nextWorld = worldChapterAt(s.distanceM);
     if (nextWorld !== this.currentWorld) this.enterWorld(nextWorld);
@@ -370,8 +384,14 @@ export class Game {
       coin.phase += dt * 5.5;
       coin.bob += dt * 3.2;
     }
+    for (const relic of s.relics) {
+      relic.x -= move;
+      relic.phase += dt * 4.2;
+      relic.bob += dt * 2.6;
+    }
     s.obstacles = s.obstacles.filter((o) => o.x + o.w > s.fieldX - 140 * s.unit);
     s.coins = s.coins.filter((c) => c.x > s.fieldX - 120 * s.unit);
+    s.relics = s.relics.filter((r) => r.x > s.fieldX - 120 * s.unit);
 
     this.checkCollisions();
     this.updateParticles(dt);
@@ -520,7 +540,6 @@ export class Game {
     const arcChance = kind === 'spikes' || kind === 'crystal' ? 0.8 : 0.55;
     if (Math.random() < arcChance) this.spawnCoinArc(obstacle, canDouble ? 150 : 0);
     else if (Math.random() < 0.3) this.spawnCoinLine(x + 230 * u, 4);
-
     const pressure = meters < 120 ? 1.28 : meters > 720 ? 0.92 : 1;
     this.spawnTimer = randomRange(0.96, 1.56) * pressure;
   }
@@ -564,6 +583,26 @@ export class Game {
     }
   }
 
+  private spawnRelic(x: number): void {
+    const s = this.state;
+    const u = s.unit;
+    const relic: Relic = {
+      x,
+      y: s.groundY - 188 * u,
+      r: 13 * u,
+      phase: Math.random() * Math.PI * 2,
+      bob: Math.random() * 6,
+    };
+    s.relics.push(relic);
+  }
+
+  private updateRelics(dt: number): void {
+    for (const relic of this.state.relics) {
+      relic.phase += dt * 4.2;
+      relic.bob += dt * 2.6;
+    }
+  }
+
   private checkCollisions(): void {
     const s = this.state;
     const p = s.player;
@@ -581,6 +620,14 @@ export class Game {
         const ow = obstacle.w - 6 * u;
         const oh = obstacle.h - 3 * u;
         if (px < ox + ow && px + pw > ox && py < oy + oh && py + ph > oy) {
+          if (s.shield) {
+            s.shield = false;
+            s.invulnUntil = s.now + 650;
+            s.shake = 5 * u;
+            this.emitBurst(p.x, p.y - p.h * 0.5, 18, '#5ad4ff');
+            this.addFloater(p.x, p.y - p.h * 1.4, 'SHIELD', '#5ad4ff', 14 * u);
+            continue;
+          }
           this.die();
           return;
         }
@@ -600,6 +647,21 @@ export class Game {
         sfx.coin();
         haptic('coin');
         this.callbacks.onCoin?.(s.runCoins);
+      }
+    }
+
+    for (let i = s.relics.length - 1; i >= 0; i -= 1) {
+      const relic = s.relics[i];
+      const dx = relic.x - p.x;
+      const dy = relic.y - (p.y - p.h * 0.5);
+      const reach = relic.r + p.w * 0.38;
+      if (dx * dx + dy * dy < reach * reach) {
+        s.relics.splice(i, 1);
+        s.shield = true;
+        this.addFloater(relic.x, relic.y - 10 * u, 'SHIELD READY', '#5ad4ff', 13 * u);
+        this.emitBurst(relic.x, relic.y, 12, '#5ad4ff');
+        sfx.revive();
+        haptic('success');
       }
     }
   }

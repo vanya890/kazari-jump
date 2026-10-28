@@ -566,6 +566,36 @@ function drawObstacle(ctx: CanvasRenderingContext2D, o: Obstacle, s: GameState, 
   ctx.restore();
 }
 
+function drawRelic(ctx: CanvasRenderingContext2D, x: number, y: number, r: number, phase: number, u: number): void {
+  const pulse = 1 + Math.sin(phase) * 0.08;
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.scale(pulse, pulse);
+  ctx.globalAlpha = 0.2;
+  ctx.fillStyle = '#5ad4ff';
+  ctx.beginPath();
+  ctx.arc(0, 0, r * 2.2, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.globalAlpha = 0.92;
+  ctx.strokeStyle = '#d5f8ff';
+  ctx.lineWidth = Math.max(1, 1.8 * u);
+  ctx.beginPath();
+  ctx.arc(0, 0, r, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.fillStyle = '#5ad4ff';
+  ctx.beginPath();
+  ctx.moveTo(0, -r * 0.72);
+  ctx.lineTo(r * 0.64, -r * 0.25);
+  ctx.lineTo(r * 0.42, r * 0.58);
+  ctx.lineTo(0, r * 0.82);
+  ctx.lineTo(-r * 0.42, r * 0.58);
+  ctx.lineTo(-r * 0.64, -r * 0.25);
+  ctx.closePath();
+  ctx.fill();
+  ctx.globalAlpha = 1;
+  ctx.restore();
+}
+
 function drawCoin(ctx: CanvasRenderingContext2D, x: number, y: number, r: number, phase: number, u: number): void {
   const spin = Math.cos(phase);
   const width = Math.max(0.16, Math.abs(spin));
@@ -660,6 +690,9 @@ export function renderGame(ctx: CanvasRenderingContext2D, s: GameState): void {
   for (const obstacle of s.obstacles) drawObstacle(ctx, obstacle, s, p);
   for (const coin of s.coins) {
     drawCoin(ctx, coin.x, coin.y + Math.sin(coin.bob) * 3 * s.unit, coin.r, coin.phase, s.unit);
+  }
+  for (const relic of s.relics) {
+    drawRelic(ctx, relic.x, relic.y + Math.sin(relic.bob) * 5 * s.unit, relic.r, relic.phase, s.unit);
   }
 
   drawPlayer(ctx, s, p);

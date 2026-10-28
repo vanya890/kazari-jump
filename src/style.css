@@ -184,6 +184,36 @@ body[data-screen='loading'] .hud {
   gap: 8px;
 }
 
+.hud-relic {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 92px;
+  padding: 8px 10px;
+  border-radius: 999px;
+  background: rgba(90, 212, 255, 0.14);
+  border: 1px solid rgba(90, 212, 255, 0.42);
+  color: var(--accent-2);
+  font-size: 11px;
+  font-weight: 850;
+  white-space: nowrap;
+  box-shadow: 0 0 14px rgba(90, 212, 255, 0.14);
+  animation: relic-ready 1.8s ease-in-out infinite;
+}
+
+.hud-relic[hidden] {
+  display: none;
+}
+
+.relic-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--accent-2);
+  box-shadow: 0 0 9px rgba(90, 212, 255, 0.8);
+  flex: none;
+}
+
 .hud-coins {
   display: flex;
   align-items: center;
@@ -2298,6 +2328,16 @@ body[data-screen='loading'] .hud {
   }
 }
 
+@keyframes relic-ready {
+  0%,
+  100% {
+    box-shadow: 0 0 10px rgba(90, 212, 255, 0.12);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(90, 212, 255, 0.34);
+  }
+}
+
 @keyframes pop-in {
   from {
     opacity: 0;
@@ -2381,6 +2421,32 @@ body[data-screen='loading'] .hud {
     right: auto;
     width: 100%;
     transform: translateX(-50%);
+  }
+}
+
+@media (max-width: 380px) {
+  .hud {
+    gap: 5px;
+    padding-left: 9px;
+    padding-right: 9px;
+  }
+
+  .hud-right {
+    gap: 4px;
+  }
+
+  .hud-relic {
+    max-width: 34px;
+    padding: 8px;
+  }
+
+  .hud-relic > span:last-child {
+    display: none;
+  }
+
+  .hud-coins {
+    padding-left: 9px;
+    padding-right: 9px;
   }
 }
 

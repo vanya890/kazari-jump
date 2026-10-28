@@ -320,8 +320,12 @@ export class UI {
     }, 2600);
   }
 
-  setHud(distance: number, coins: number, bump = false): void {
+  setHud(distance: number, coins: number, bump = false, shield = false): void {
     const distanceEl = document.getElementById('hud-distance');
+    const relicEl = document.getElementById('hud-relic');
+    const relicLabel = document.getElementById('hud-relic-label');
+    if (relicEl) relicEl.toggleAttribute('hidden', !shield);
+    if (relicLabel) relicLabel.textContent = makeT(this.state.lang)('hud.shield');
     const coinsEl = document.getElementById('hud-run-coins');
     if (distanceEl) {
       const formatted = formatNumber(this.state.lang, distance);

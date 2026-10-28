@@ -33,6 +33,7 @@ const ru: Dict = {
   'world.route': 'Маршрут путешествия',
 
   'hud.m': 'м',
+  'hud.shield': 'Щит',
   'rotateHint': 'Лучше играть в вертикальном режиме',
 
   'over.title': 'Забег окончен',
@@ -162,6 +163,7 @@ const en: Dict = {
   'world.route': 'Journey route',
 
   'hud.m': 'm',
+  'hud.shield': 'Shield',
   'rotateHint': 'Best played in portrait',
 
   'over.title': 'Run over',

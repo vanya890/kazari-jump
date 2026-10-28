@@ -135,7 +135,7 @@ function ensureGame(): Game {
         const coins = snapshot.runCoins;
         const bump = coins > lastCoins;
         lastCoins = coins;
-        ui.setHud(Math.floor(snapshot.distanceM), coins, bump);
+        ui.setHud(Math.floor(snapshot.distanceM), coins, bump, snapshot.shield);
       },
       onDeath: (run) => handleDeath(run),
     },
@@ -193,7 +193,7 @@ function startRun(): void {
   state.death = null;
   state.result = null;
   state.pauseRun = null;
-  ui.setHud(0, 0);
+  ui.setHud(0, 0, false, false);
   ui.render();
 
   const engine = ensureGame();

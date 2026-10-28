@@ -34,6 +34,14 @@ export interface Coin {
   bob: number;
 }
 
+export interface Relic {
+  x: number;
+  y: number;
+  r: number;
+  phase: number;
+  bob: number;
+}
+
 export interface Particle {
   x: number;
   y: number;
@@ -80,7 +88,9 @@ export interface GameState {
   player: Player;
   obstacles: Obstacle[];
   coins: Coin[];
+  relics: Relic[];
   particles: Particle[];
+  shield: boolean;
   floaters: Floater[];
   clouds: Cloud[];
   distancePx: number;
