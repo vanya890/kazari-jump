@@ -10,6 +10,7 @@ import { renderGame } from './render';
 import { sfx } from '../audio';
 import { haptic } from '../tg';
 import { skinVisual } from '../data/catalog';
+import { worldAt, worldChapterAt, WORLD_LENGTH } from './worlds';
 
 const clamp = (value: number, min: number, max: number): number => Math.min(max, Math.max(min, value));
 
@@ -30,6 +31,7 @@ export class Game {
   private spawnTimer = 1.6;
   private nextBlink = 0;
   private nextMilestone = 250;
+  private currentWorld = -1;
   private resizeObserver: ResizeObserver | null = null;
   private deadNotified = false;
 
@@ -70,6 +72,7 @@ export class Game {
       clouds: [],
       distancePx: 0,
       distanceM: 0,
+      worldIndex: 0,
       runCoins: 0,
       speedPx: 0,
       elapsedMs: 0,
@@ -170,6 +173,8 @@ export class Game {
     s.invulnUntil = 0;
     s.revived = false;
     s.phase = 'running';
+    this.currentWorld = -1;
+    this.enterWorld(0);
     s.player.y = s.groundY;
     s.player.vy = 0;
     s.player.onGround = true;
@@ -349,6 +354,9 @@ export class Game {
       this.nextMilestone += 200;
     }
 
+    const nextWorld = worldChapterAt(s.distanceM);
+    if (nextWorld !== this.currentWorld) this.enterWorld(nextWorld);
+
     this.spawnTimer -= dt;
     if (this.spawnTimer <= 0) this.spawnPattern();
 
@@ -371,6 +379,23 @@ export class Game {
     this.updateFloaters(dt);
     s.shake *= Math.pow(0.002, dt);
     s.flash = Math.max(0, s.flash - dt * 2.4);
+  }
+
+  private enterWorld(chapter: number): void {
+    const index = worldAt(chapter * WORLD_LENGTH).index;
+    this.currentWorld = chapter;
+    this.state.worldIndex = index;
+    this.callbacks.onWorld?.(index);
+    if (chapter > 0) {
+      const world = worldAt(chapter * WORLD_LENGTH);
+      this.addFloater(
+        this.state.fieldW * 0.62,
+        this.state.groundY - this.state.player.h * 2.4,
+        world.name,
+        '#fff0c9',
+        19 * this.state.unit,
+      );
+    }
   }
 
   private updateClouds(dt: number): void {
@@ -463,6 +488,8 @@ export class Game {
     if (s.distanceM > 160 && roll > 0.48) kind = 'cactus';
     if (s.distanceM > 420 && roll > 0.88) kind = 'pillar';
     if (s.distanceM > 620 && roll > 0.82) kind = 'pillar';
+    if (s.distanceM > 720 && roll > 0.64) kind = 'crystal';
+    if (s.distanceM > 1440 && roll > 0.72) kind = 'driftwood';
     if (s.distanceM < 60) kind = 'rock';
 
     const dims = this.obstacleDims(kind);
@@ -490,12 +517,12 @@ export class Game {
       });
     }
 
-    const arcChance = kind === 'spikes' ? 0.75 : 0.55;
+    const arcChance = kind === 'spikes' || kind === 'crystal' ? 0.8 : 0.55;
     if (Math.random() < arcChance) this.spawnCoinArc(obstacle, canDouble ? 150 : 0);
     else if (Math.random() < 0.3) this.spawnCoinLine(x + 230 * u, 4);
 
-    const pressure = meters < 120 ? 1.28 : 1;
-    this.spawnTimer = randomRange(1.02, 1.68) * pressure;
+    const pressure = meters < 120 ? 1.28 : meters > 720 ? 0.92 : 1;
+    this.spawnTimer = randomRange(0.96, 1.56) * pressure;
   }
 
   private obstacleDims(kind: ObstacleKind): { w: number; h: number } {
@@ -503,6 +530,8 @@ export class Game {
     if (kind === 'spikes') return { w: randomRange(58, 92) * u, h: randomRange(26, 36) * u };
     if (kind === 'cactus') return { w: randomRange(34, 44) * u, h: randomRange(62, 86) * u };
     if (kind === 'pillar') return { w: randomRange(26, 34) * u, h: randomRange(88, 104) * u };
+    if (kind === 'crystal') return { w: randomRange(34, 46) * u, h: randomRange(58, 88) * u };
+    if (kind === 'driftwood') return { w: randomRange(68, 104) * u, h: randomRange(22, 32) * u };
     return { w: randomRange(34, 52) * u, h: randomRange(38, 58) * u };
   }
 

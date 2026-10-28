@@ -15,7 +15,7 @@ export interface Player {
   idlePhase: number;
 }
 
-export type ObstacleKind = 'rock' | 'cactus' | 'spikes' | 'pillar';
+export type ObstacleKind = 'rock' | 'cactus' | 'spikes' | 'pillar' | 'driftwood' | 'crystal';
 
 export interface Obstacle {
   x: number;
@@ -85,6 +85,7 @@ export interface GameState {
   clouds: Cloud[];
   distancePx: number;
   distanceM: number;
+  worldIndex: number;
   runCoins: number;
   speedPx: number;
   elapsedMs: number;
@@ -111,6 +112,7 @@ export interface GameCallbacks {
   onDeath?: (run: RunSnapshot) => void;
   onTick?: (state: GameState) => void;
   onJump?: () => void;
+  onWorld?: (index: number) => void;
 }
 
 export interface EngineOptions {

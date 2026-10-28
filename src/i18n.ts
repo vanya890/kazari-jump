@@ -27,6 +27,9 @@ const ru: Dict = {
   'hint.start': 'Тапни, чтобы прыгнуть',
   'hint.tap': 'Тап — прыжок',
   'hint.hold': 'Держи дольше — прыжок выше',
+  'world.journey': 'Следующая глава пути',
+  'world.progress': 'Прогресс до следующего мира',
+  'world.next': 'До нового мира: {n} м',
 
   'hud.m': 'м',
   'rotateHint': 'Лучше играть в вертикальном режиме',
@@ -152,6 +155,9 @@ const en: Dict = {
   'hint.start': 'Tap to jump',
   'hint.tap': 'Tap to jump',
   'hint.hold': 'Hold longer to jump higher',
+  'world.journey': 'The next chapter',
+  'world.progress': 'Progress to the next world',
+  'world.next': 'Next world in {n} m',
 
   'hud.m': 'm',
   'rotateHint': 'Best played in portrait',

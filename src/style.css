@@ -408,6 +408,85 @@ body[data-screen='loading'] .hud {
   filter: drop-shadow(0 18px 24px rgba(5, 3, 20, 0.55));
 }
 
+.hero-world-mark {
+  position: absolute;
+  right: 10%;
+  bottom: 12%;
+  display: grid;
+  place-items: center;
+  width: clamp(34px, 8vw, 52px);
+  height: clamp(34px, 8vw, 52px);
+  border-radius: 50%;
+  background: rgba(11, 10, 36, 0.58);
+  border: 1px solid rgba(255, 240, 201, 0.35);
+  color: var(--gold);
+  font-size: clamp(18px, 4vw, 26px);
+  box-shadow: 0 8px 20px rgba(7, 4, 23, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  animation: badge-pulse 3.8s ease-in-out infinite;
+}
+
+.world-card {
+  width: 100%;
+  padding: 11px 13px 10px;
+  border: 1px solid rgba(255, 240, 201, 0.22);
+  border-radius: 16px;
+  background: linear-gradient(110deg, rgba(11, 10, 36, 0.58), rgba(44, 34, 78, 0.42));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.world-card-copy {
+  display: grid;
+  gap: 2px;
+}
+
+.world-card-kicker {
+  color: var(--gold);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+.world-card-copy strong {
+  font-size: 14px;
+  letter-spacing: -0.02em;
+}
+
+.world-card-copy span:last-child {
+  color: var(--muted);
+  font-size: 10px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.world-progress {
+  height: 5px;
+  margin-top: 9px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.world-progress span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--gold), var(--pink), var(--accent-2));
+  box-shadow: 0 0 12px rgba(255, 210, 74, 0.48);
+  transition: width 0.35s ease-out;
+}
+
+.world-card-foot {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 6px;
+  color: var(--muted-2);
+  font-size: 9px;
+  font-variant-numeric: tabular-nums;
+}
+
 .menu-stats {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -2186,6 +2265,16 @@ body[data-screen='loading'] .hud {
   }
 }
 
+@keyframes badge-pulse {
+  0%,
+  100% {
+    transform: rotate(-4deg) scale(1);
+  }
+  50% {
+    transform: rotate(4deg) scale(1.08);
+  }
+}
+
 @keyframes ad-bounce {
   0%,
   100% {
@@ -2243,6 +2332,15 @@ body[data-screen='loading'] .hud {
     width: min(50vw, 160px);
   }
 
+  .world-card {
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+
+  .world-card-foot {
+    margin-top: 4px;
+  }
+
   .menu-foot {
     display: none;
   }
@@ -2263,6 +2361,10 @@ body[data-screen='loading'] .hud {
 
   .hero-stage {
     display: none;
+  }
+
+  .world-card {
+    padding: 8px 11px;
   }
 
   .menu-stats {
@@ -2305,6 +2407,7 @@ body[data-screen='loading'] .hud {
 
   .hero-avatar,
   .hero-glow,
+  .hero-world-mark,
   .btn-play::after {
     animation: none !important;
   }

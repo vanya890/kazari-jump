@@ -13,6 +13,7 @@ import { productDescription, productTitle, skinVisual } from './data/catalog';
 import { formatNumber, makeT } from './i18n';
 import { paintAvatars } from './avatar';
 import { sfx } from './audio';
+import { worldAt } from './game/worlds';
 
 export const APP_VERSION = '0.1.0';
 
@@ -453,6 +454,7 @@ export class UI {
     const profile = s.profile;
     if (!profile) return '';
     const fmt = (n: number) => formatNumber(s.lang, n);
+    const world = worldAt(profile.bestScore, s.lang);
     const challenge = s.challengeScore;
     const online = !s.offline;
     const topPreview = s.top
@@ -478,7 +480,22 @@ export class UI {
           <div class="hero-stage">
             <span class="hero-glow" aria-hidden="true"></span>
             <canvas class="hero-avatar" data-avatar="${esc(profile.activeSkin)}" aria-hidden="true"></canvas>
+            <span class="hero-world-mark" aria-hidden="true">${esc(world.glyph)}</span>
           </div>
+          <section class="world-card" aria-label="${esc(world.name)}">
+            <div class="world-card-copy">
+              <span class="world-card-kicker">${esc(t('world.journey'))}</span>
+              <strong>${esc(world.name)}</strong>
+              <span>${esc(world.subtitle)}</span>
+            </div>
+            <div class="world-progress" role="progressbar" aria-label="${esc(t('world.progress'))}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round(world.progress * 100)}">
+              <span style="width:${Math.max(3, Math.round(world.progress * 100))}%"></span>
+            </div>
+            <div class="world-card-foot">
+              <span>${esc(t('world.next', { n: fmt(world.distanceToNext) }))}</span>
+              <span>${Math.round(world.progress * 100)}%</span>
+            </div>
+          </section>
           <div class="menu-stats">
             ${stateCard(t('best'), fmt(profile.bestScore), t('hud.m'))}
             ${stateCard(t('coins'), fmt(profile.coins))}

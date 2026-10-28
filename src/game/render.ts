@@ -1,4 +1,5 @@
 import type { GameState, Obstacle, Particle } from './types';
+import { WORLD_LENGTH } from './worlds';
 import { drawPlayer } from './player';
 
 export interface Palette {
@@ -131,7 +132,7 @@ function mixPalette(a: Palette, b: Palette, t: number): Palette {
 }
 
 export function paletteFor(distanceM: number): Palette {
-  const span = 720;
+  const span = WORLD_LENGTH;
   const raw = (Math.max(0, distanceM) / span) % PALETTES.length;
   const index = Math.floor(raw);
   const next = (index + 1) % PALETTES.length;
@@ -403,6 +404,43 @@ function drawObstacle(ctx: CanvasRenderingContext2D, o: Obstacle, s: GameState, 
       ctx.lineTo(o.w * 0.75, y - 2 * u);
       ctx.stroke();
     }
+  } else if (o.kind === 'crystal') {
+    const crystal = ctx.createLinearGradient(0, 0, o.w, o.h);
+    crystal.addColorStop(0, '#d7fbff');
+    crystal.addColorStop(0.42, p.cloud);
+    crystal.addColorStop(1, p.mid);
+    ctx.fillStyle = crystal;
+    ctx.beginPath();
+    ctx.moveTo(o.w * 0.5, 0);
+    ctx.lineTo(o.w, o.h * 0.76);
+    ctx.lineTo(o.w * 0.66, o.h);
+    ctx.lineTo(o.w * 0.22, o.h * 0.82);
+    ctx.closePath();
+    ctx.fill();
+    ctx.globalAlpha = 0.5;
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 1.5 * u;
+    ctx.beginPath();
+    ctx.moveTo(o.w * 0.5, 0);
+    ctx.lineTo(o.w * 0.55, o.h * 0.82);
+    ctx.lineTo(o.w * 0.22, o.h * 0.82);
+    ctx.stroke();
+    ctx.globalAlpha = 1;
+  } else if (o.kind === 'driftwood') {
+    const wood = ctx.createLinearGradient(0, 0, 0, o.h);
+    wood.addColorStop(0, p.stone);
+    wood.addColorStop(1, p.stoneDark);
+    ctx.fillStyle = wood;
+    roundRect(ctx, 0, o.h * 0.18, o.w, o.h * 0.72, o.h * 0.32);
+    ctx.fill();
+    ctx.strokeStyle = p.grass;
+    ctx.lineWidth = 2 * u;
+    ctx.globalAlpha = 0.7;
+    ctx.beginPath();
+    ctx.moveTo(o.w * 0.16, o.h * 0.45);
+    ctx.quadraticCurveTo(o.w * 0.42, o.h * 0.08, o.w * 0.8, o.h * 0.52);
+    ctx.stroke();
+    ctx.globalAlpha = 1;
   } else if (o.kind === 'spikes') {
     const count = 3;
     const step = o.w / count;

@@ -47,6 +47,7 @@ export function paintAvatar(canvas: HTMLCanvasElement, skinId: string): void {
     clouds: [],
     distancePx: 0,
     distanceM: 0,
+    worldIndex: 0,
     runCoins: 0,
     speedPx: 0,
     elapsedMs: 0,
