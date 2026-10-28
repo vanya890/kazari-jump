@@ -208,6 +208,7 @@ export class UI {
   private toastTimer = 0;
   private focusKey = '';
   private hudShield = false;
+  private lastLayoutWarning = '';
 
   constructor(root: HTMLElement, handlers: UIHandlers, initial: UiState) {
     this.root = root;
@@ -405,7 +406,33 @@ export class UI {
     const nextScroller = this.root.querySelector<HTMLElement>('.sheet-scroll');
     if (nextScroller) nextScroller.scrollTop = scrollTop;
     paintAvatars(this.root);
+    this.auditMenuLayout();
     this.restoreFocus(restore, activeDialog);
+  }
+
+  private auditMenuLayout(): void {
+    if (!import.meta.env.DEV || this.state.screen !== 'menu' || this.state.modal || this.state.overlay) return;
+    const selectors = ['.menu-head', '.menu-hero', '.challenge-banner', '.menu-actions', '.menu-foot'];
+    const boxes = selectors
+      .map((selector) => {
+        const element = this.root.querySelector<HTMLElement>(selector);
+        if (!element) return null;
+        const rect = element.getBoundingClientRect();
+        return { selector, top: rect.top, bottom: rect.bottom, left: rect.left, right: rect.right };
+      })
+      .filter((box): box is { selector: string; top: number; bottom: number; left: number; right: number } => Boolean(box));
+    const overlapping = boxes.flatMap((a, index) =>
+      boxes.slice(index + 1).filter((b) =>
+        a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top,
+      ).map((b) => `${a.selector} ↔ ${b.selector}`),
+    );
+    const warning = overlapping.join(', ');
+    if (warning && warning !== this.lastLayoutWarning) {
+      this.lastLayoutWarning = warning;
+      console.warn(`[Kazari layout] overlapping menu blocks: ${warning}`);
+    } else if (!warning) {
+      this.lastLayoutWarning = '';
+    }
   }
 
   private restoreFocus(
