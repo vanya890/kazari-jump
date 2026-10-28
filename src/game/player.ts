@@ -91,6 +91,27 @@ export function drawPlayer(ctx: CanvasRenderingContext2D, s: GameState, palette:
   ctx.quadraticCurveTo(-p.w * 0.8, -p.h * 0.34, -p.w * 0.76, -p.h * 0.12);
   ctx.stroke();
 
+  // Ninja band tail stays behind the ears and face.
+  if (skin.accessory === 'band') {
+    ctx.fillStyle = skin.accent;
+    ctx.beginPath();
+    ctx.moveTo(-p.w * 0.45, -p.h * 0.59);
+    ctx.lineTo(-p.w * 0.82, -p.h * 0.57);
+    ctx.lineTo(-p.w * 0.9, -p.h * 0.47);
+    ctx.lineTo(-p.w * 0.47, -p.h * 0.5);
+    ctx.closePath();
+    ctx.fill();
+    ctx.globalAlpha = 0.48;
+    ctx.fillStyle = skin.bodyDark;
+    ctx.beginPath();
+    ctx.moveTo(-p.w * 0.84, -p.h * 0.54);
+    ctx.lineTo(-p.w * 0.9, -p.h * 0.47);
+    ctx.lineTo(-p.w * 0.53, -p.h * 0.51);
+    ctx.closePath();
+    ctx.fill();
+    ctx.globalAlpha = 1;
+  }
+
   // Ears (behind the body)
   const earY = -p.h * 0.83;
   ctx.fillStyle = skin.body;
@@ -267,23 +288,28 @@ export function drawPlayer(ctx: CanvasRenderingContext2D, s: GameState, palette:
     ctx.ellipse(0, headTop - 2 * u, p.w * 0.29, p.h * 0.075, 0, 0, Math.PI * 2);
     ctx.stroke();
   } else if (skin.accessory === 'band') {
+    const bandTop = eyeY - 5.2 * u;
+    const bandBottom = eyeY + 3.8 * u;
     ctx.fillStyle = skin.accent;
-    ctx.fillRect(-p.w * 0.5, eyeY - 4.6 * u, p.w, 9 * u);
     ctx.beginPath();
-    ctx.moveTo(-p.w * 0.5, eyeY - 4.6 * u);
-    ctx.lineTo(-p.w * 0.82, eyeY - 1 * u);
-    ctx.lineTo(-p.w * 0.8, eyeY + 4 * u);
-    ctx.lineTo(-p.w * 0.5, eyeY + 1 * u);
+    ctx.moveTo(-p.w * 0.48, bandTop + 1.4 * u);
+    ctx.quadraticCurveTo(0, bandTop - 1.2 * u, p.w * 0.48, bandTop + 1.4 * u);
+    ctx.lineTo(p.w * 0.48, bandBottom - 1.2 * u);
+    ctx.quadraticCurveTo(0, bandBottom + 1.1 * u, -p.w * 0.48, bandBottom - 1.2 * u);
     ctx.closePath();
     ctx.fill();
-    ctx.fillStyle = '#ffffff';
-    ctx.globalAlpha = 0.85;
-    ellipse(ctx, -p.w * 0.32, eyeY - 0.5 * u, 2.2 * u, 1.2 * u);
-    ctx.fill();
+    ctx.strokeStyle = skin.bodyDark;
+    ctx.globalAlpha = 0.7;
+    ctx.lineWidth = 1.1 * u;
+    ctx.beginPath();
+    ctx.moveTo(-p.w * 0.47, bandBottom - 1.2 * u);
+    ctx.quadraticCurveTo(0, bandBottom + 1.1 * u, p.w * 0.47, bandBottom - 1.2 * u);
+    ctx.stroke();
     ctx.globalAlpha = 1;
+
     ctx.fillStyle = skin.eye;
     for (const side of [-1, 1]) {
-      ellipse(ctx, side * eyeX, eyeY, 2.4 * u, 1.5 * u);
+      ellipse(ctx, side * eyeX, eyeY + 0.4 * u, 2.4 * u, 1.5 * u);
       ctx.fill();
     }
   } else if (skin.accessory === 'headphones') {
