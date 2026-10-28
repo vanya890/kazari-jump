@@ -30,6 +30,7 @@ const ru: Dict = {
   'world.journey': 'Следующая глава пути',
   'world.progress': 'Прогресс до следующего мира',
   'world.next': 'До нового мира: {n} м',
+  'world.route': 'Маршрут путешествия',
 
   'hud.m': 'м',
   'rotateHint': 'Лучше играть в вертикальном режиме',
@@ -158,6 +159,7 @@ const en: Dict = {
   'world.journey': 'The next chapter',
   'world.progress': 'Progress to the next world',
   'world.next': 'Next world in {n} m',
+  'world.route': 'Journey route',
 
   'hud.m': 'm',
   'rotateHint': 'Best played in portrait',

@@ -1,5 +1,5 @@
 import type { GameState, Obstacle, Particle } from './types';
-import { WORLD_LENGTH } from './worlds';
+import { WORLD_LENGTH, worldAt } from './worlds';
 import { drawPlayer } from './player';
 
 export interface Palette {
@@ -269,6 +269,79 @@ function drawMountains(ctx: CanvasRenderingContext2D, s: GameState, p: Palette):
   ridge(ctx, s, s.groundY - 110 * s.unit, 76 * s.unit, off * 0.045, p.far, 16);
   ridge(ctx, s, s.groundY - 52 * s.unit, 92 * s.unit, off * 0.095, p.mid, 14);
   ridge(ctx, s, s.groundY + 14 * s.unit, 58 * s.unit, off * 0.18, p.near, 12);
+}
+
+function drawLandmark(ctx: CanvasRenderingContext2D, s: GameState, p: Palette): void {
+  const world = worldAt(s.distanceM);
+  const u = s.unit;
+  const drift = (s.distancePx * 0.12) % (s.w + 260 * u);
+  const x = s.w + 150 * u - drift;
+  const base = s.groundY - 48 * u;
+  ctx.save();
+  ctx.globalAlpha = 0.42;
+  ctx.fillStyle = p.near;
+  ctx.strokeStyle = p.groundLine;
+  ctx.lineWidth = 2 * u;
+
+  if (world.landmark === 'lanterns') {
+    for (let i = 0; i < 3; i += 1) {
+      const lx = x + i * 72 * u;
+      ctx.beginPath();
+      ctx.moveTo(lx, base);
+      ctx.lineTo(lx, base - (50 + i * 14) * u);
+      ctx.stroke();
+      ctx.fillStyle = p.sun;
+      ctx.globalAlpha = 0.22;
+      ctx.beginPath();
+      ctx.arc(lx, base - (58 + i * 14) * u, 7 * u, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = p.near;
+      ctx.globalAlpha = 0.42;
+    }
+  } else if (world.landmark === 'torii') {
+    const width = 116 * u;
+    const top = base - 104 * u;
+    ctx.strokeStyle = p.haze;
+    ctx.lineWidth = 8 * u;
+    ctx.beginPath();
+    ctx.moveTo(x - width / 2, base);
+    ctx.lineTo(x - width / 2 + 14 * u, top + 20 * u);
+    ctx.moveTo(x + width / 2, base);
+    ctx.lineTo(x + width / 2 - 14 * u, top + 20 * u);
+    ctx.moveTo(x - width / 2 - 10 * u, top + 14 * u);
+    ctx.lineTo(x + width / 2 + 10 * u, top + 14 * u);
+    ctx.moveTo(x - width / 2 - 3 * u, top + 34 * u);
+    ctx.lineTo(x + width / 2 + 3 * u, top + 34 * u);
+    ctx.stroke();
+  } else if (world.landmark === 'peaks') {
+    ctx.fillStyle = p.groundLine;
+    ctx.beginPath();
+    ctx.moveTo(x - 140 * u, base);
+    ctx.lineTo(x - 52 * u, base - 112 * u);
+    ctx.lineTo(x + 12 * u, base - 40 * u);
+    ctx.lineTo(x + 82 * u, base - 138 * u);
+    ctx.lineTo(x + 164 * u, base);
+    ctx.closePath();
+    ctx.fill();
+    ctx.fillStyle = p.cloud;
+    ctx.globalAlpha = 0.18;
+    ctx.fillRect(x - 82 * u, base - 84 * u, 40 * u, 7 * u);
+    ctx.fillRect(x + 44 * u, base - 105 * u, 52 * u, 7 * u);
+  } else {
+    ctx.strokeStyle = p.sun;
+    ctx.lineWidth = 12 * u;
+    ctx.beginPath();
+    ctx.arc(x, base, 74 * u, Math.PI, Math.PI * 2);
+    ctx.stroke();
+    ctx.lineWidth = 4 * u;
+    ctx.beginPath();
+    ctx.moveTo(x - 74 * u, base);
+    ctx.lineTo(x - 74 * u, base + 18 * u);
+    ctx.moveTo(x + 74 * u, base);
+    ctx.lineTo(x + 74 * u, base + 18 * u);
+    ctx.stroke();
+  }
+  ctx.restore();
 }
 
 function drawGround(ctx: CanvasRenderingContext2D, s: GameState, p: Palette): void {
@@ -580,6 +653,7 @@ export function renderGame(ctx: CanvasRenderingContext2D, s: GameState): void {
 
   drawSky(ctx, s, p);
   drawMountains(ctx, s, p);
+  drawLandmark(ctx, s, p);
   drawSpeedLines(ctx, s);
   drawGround(ctx, s, p);
 

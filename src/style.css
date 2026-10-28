@@ -487,6 +487,76 @@ body[data-screen='loading'] .hud {
   font-variant-numeric: tabular-nums;
 }
 
+.world-route {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 28px;
+  gap: 6px;
+  margin-top: 1px;
+}
+
+.route-stop {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--stroke);
+  border-radius: 50%;
+  color: var(--muted-2);
+  background: rgba(11, 10, 36, 0.28);
+  transition: color 0.25s ease, border-color 0.25s ease, transform 0.25s ease, background 0.25s ease;
+}
+
+.route-stop i {
+  font-style: normal;
+  font-size: 11px;
+  line-height: 1;
+}
+
+.route-stop b {
+  position: absolute;
+  right: -2px;
+  bottom: -4px;
+  display: grid;
+  place-items: center;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--bg-deep);
+  color: var(--muted-2);
+  font-size: 8px;
+}
+
+.route-stop.is-reached {
+  border-color: rgba(46, 230, 168, 0.44);
+  color: var(--accent);
+}
+
+.route-stop.is-reached b {
+  color: var(--accent);
+}
+
+.route-stop.is-active {
+  transform: scale(1.13);
+  border-color: var(--gold);
+  background: rgba(255, 210, 74, 0.14);
+  color: var(--gold);
+  box-shadow: 0 0 16px rgba(255, 210, 74, 0.16);
+}
+
+.route-stop.is-active b {
+  color: var(--gold);
+}
+
+.route-line {
+  width: min(10vw, 44px);
+  height: 1px;
+  background: linear-gradient(90deg, rgba(46, 230, 168, 0.45), rgba(255, 255, 255, 0.16));
+}
+
 .menu-stats {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));

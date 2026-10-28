@@ -13,7 +13,7 @@ import { productDescription, productTitle, skinVisual } from './data/catalog';
 import { formatNumber, makeT } from './i18n';
 import { paintAvatars } from './avatar';
 import { sfx } from './audio';
-import { worldAt } from './game/worlds';
+import { WORLD_ATLAS, worldAt } from './game/worlds';
 
 export const APP_VERSION = '0.1.0';
 
@@ -496,6 +496,15 @@ export class UI {
               <span>${Math.round(world.progress * 100)}%</span>
             </div>
           </section>
+          <nav class="world-route" aria-label="${esc(t('world.route'))}">
+            ${WORLD_ATLAS.map((chapter, index) => {
+              const reached = index <= world.index;
+              const active = index === world.index;
+              return `<span class="route-stop ${reached ? 'is-reached' : ''} ${active ? 'is-active' : ''}" title="${esc(chapter.name[s.lang])}">
+                <i>${esc(chapter.glyph)}</i><b>${index + 1}</b>
+              </span>`;
+            }).join('<span class="route-line" aria-hidden="true"></span>')}
+          </nav>
           <div class="menu-stats">
             ${stateCard(t('best'), fmt(profile.bestScore), t('hud.m'))}
             ${stateCard(t('coins'), fmt(profile.coins))}
