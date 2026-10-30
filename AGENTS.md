@@ -62,3 +62,33 @@ npx tgcloud status / diff / push / migrate / run
 - Local mode starts with 250 coins and a guest profile; it never touches the
   server.
 - `npm run build` is the TypeScript gate (`noUnusedLocals`, `noUnusedParameters`).
+
+## Pulse Drift (вторая игра)
+
+Краткий обзор: Pulse Drift — ритмичный гейт-раннер, открывающийся по умолчанию на `/`.
+Старый Jump доступен по ссылке `?game=jump`.
+
+| Path | What it is |
+| --- | --- |
+| `src/entry.ts` | Точка входа: `/` → Pulse Drift, `?game=jump` → Kazari Jump |
+| `src/pulse/main.ts` | Главный цикл, меню, интерфейс, корзина, темы, достижения |
+| `src/pulse/game.ts` | Canvas 2D движок: физика, ворота, столкновения, отрисовка |
+| `src/pulse/style.css` | Киберпанк-стиль, темы, анимации |
+| `src/pulse/catalog.ts` | Каталог дронов и цветовых тем |
+
+### Продуктивные инварианты
+
+- Score = количество пройденных ворот. Рекорд хранится в `localStorage`
+  под ключом `kazari.pulse.best.v2`.
+- Активный дрон хранится под ключом `kazari.pulse.drone.v1`.
+- Активная тема хранится под ключом `kazari.pulse.theme.v1`.
+- Дроны и темы описываются в `src/pulse/catalog.ts`: `DRONES` и `THEMES`.
+- Цвета тем задаются через CSS-переменные `--pulse-bg1`, `--pulse-bg2`,
+  `--pulse-cyan`, `--pulse-coral`, `--pulse-yellow`.
+- При изменении каталога (`catalog.ts`) проверяйте, что `main.ts` не
+  ссылается на удалённые ID дронов или тем.
+
+### Планы
+
+Полный список запланированных улучшений см. в `ROADMAP.md`.
+
