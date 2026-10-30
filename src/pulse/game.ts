@@ -36,6 +36,8 @@ export class PulseGame {
   private currentStreak = 0;
   private pulseFlash = 0;
   private lastPulse = -1;
+  private droneColor = '#62f6e0';
+  private droneGlow = 'rgba(98,246,224,0.78)';
   private readonly stars = Array.from({ length: 42 }, (_, index) => ({ x: (index * 83.7) % 1, y: (index * 47.3) % 1, size: 0.7 + (index % 3) * 0.5, alpha: 0.18 + (index % 4) * 0.08 }));
 
   constructor(canvas: HTMLCanvasElement, callbacks: PulseCallbacks) {
@@ -44,6 +46,12 @@ export class PulseGame {
     if (!context) throw new Error('Pulse Drift requires Canvas 2D');
     this.context = context;
     this.callbacks = callbacks;
+  }
+
+  setDrone(drone: { color: string; glow: string }): void {
+    this.droneColor = drone.color;
+    this.droneGlow = drone.glow;
+    if (!this.running) this.draw(0.016);
   }
 
   get score(): number { return this.currentScore; }
@@ -255,9 +263,9 @@ export class PulseGame {
     ctx.save();
     ctx.translate(x, y);
     ctx.rotate(clamp(this.velocity / 1800, -0.28, 0.35));
-    ctx.shadowColor = 'rgba(98,246,224,0.78)';
+    ctx.shadowColor = this.droneGlow;
     ctx.shadowBlur = 20 + this.pulseFlash * 22;
-    ctx.fillStyle = '#62f6e0';
+    ctx.fillStyle = this.droneColor;
     ctx.beginPath(); ctx.arc(0, 0, radius, 0, Math.PI * 2); ctx.fill();
     ctx.shadowBlur = 0;
     ctx.fillStyle = '#0b2030';

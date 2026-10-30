@@ -1,5 +1,6 @@
 import './style.css';
 import { PulseGame } from './game';
+import { DRONES, THEMES } from './catalog';
 
 type Lang = 'ru' | 'en';
 
@@ -11,6 +12,8 @@ const copy = {
     subtitle: 'Поймай сигнал. Не дай ритму сорваться.',
     best: 'Личный рекорд',
     start: 'Войти в поток',
+    shop: 'Ангар дронов',
+    themes: 'Темы',
     hint: 'Тапни или нажми пробел, чтобы подняться',
     score: 'ворот',
     combo: 'серия',
@@ -26,14 +29,19 @@ const copy = {
     ready: 'Готов?',
     perfect: 'ИДЕАЛЬНО',
     clean: 'ЧИСТО',
-    challenge: 'Побей мой сигнал: {score} ворот',
+    challenge: 'Побей мой сигнал: {score} ворот в Pulse Drift!',
     newBest: 'Новый рекорд',
+    buy: 'Выбрать',
+    selected: 'Активен',
+    credits: 'Кредиты',
   },
   en: {
     title: 'Pulse Drift',
     subtitle: 'Catch the signal. Keep the rhythm alive.',
     best: 'Personal best',
     start: 'Enter the flow',
+    shop: 'Drone Hangar',
+    themes: 'Themes',
     hint: 'Tap or press space to rise',
     score: 'gates',
     combo: 'streak',
@@ -49,8 +57,11 @@ const copy = {
     ready: 'Ready?',
     perfect: 'PERFECT',
     clean: 'CLEAN',
-    challenge: 'Beat my signal: {score} gates',
+    challenge: 'Beat my signal: {score} gates in Pulse Drift!',
     newBest: 'New personal best',
+    buy: 'Select',
+    selected: 'Equipped',
+    credits: 'Credits',
   },
 }[lang];
 
@@ -69,15 +80,38 @@ root.innerHTML = `
     <section class="pulse-menu" id="pulse-menu">
       <div class="signal-lockup">
         <div class="signal-orbit orbit-one"></div><div class="signal-orbit orbit-two"></div>
-        <div class="signal-core"><span></span></div>
+        <div class="signal-core"><span id="core-dot"></span></div>
       </div>
-      <p class="pulse-kicker">KAZARI / SIGNAL 01</p>
+      <p class="pulse-kicker">KAZARI / NEURAL NET 02</p>
       <h1>${copy.title}</h1>
       <p class="pulse-subtitle">${copy.subtitle}</p>
       <div class="menu-best"><span>${copy.best}</span><strong id="pulse-best">0</strong></div>
-      <button class="pulse-button pulse-primary" id="pulse-start" type="button"><span>${copy.start}</span><b>↗</b></button>
+      <div class="menu-row">
+        <button class="pulse-button pulse-primary" id="pulse-start" type="button"><span>${copy.start}</span><b>↗</b></button>
+      </div>
+      <div class="menu-nav-row">
+        <button class="sub-button" id="open-shop" type="button">${copy.shop}</button>
+        <button class="sub-button" id="open-themes" type="button">${copy.themes}</button>
+      </div>
       <p class="pulse-hint">${copy.hint}</p>
     </section>
+
+    <div class="modal-overlay" id="modal-shop" hidden>
+      <div class="modal-card">
+        <h2>${copy.shop}</h2>
+        <div class="drone-grid" id="drone-list"></div>
+        <button class="pulse-button pulse-secondary" id="close-shop" type="button"><span>${copy.menu}</span><b>✕</b></button>
+      </div>
+    </div>
+
+    <div class="modal-overlay" id="modal-themes" hidden>
+      <div class="modal-card">
+        <h2>${copy.themes}</h2>
+        <div class="theme-grid" id="theme-list"></div>
+        <button class="pulse-button pulse-secondary" id="close-themes" type="button"><span>${copy.menu}</span><b>✕</b></button>
+      </div>
+    </div>
+
     <section class="pulse-overlay" id="pulse-overlay" hidden>
       <div class="result-card" id="pulse-result">
         <p class="pulse-kicker" id="result-kicker">${copy.gameOver}</p>
@@ -117,10 +151,39 @@ const resultGates = document.getElementById('result-gates');
 const resultHigh = document.getElementById('result-high');
 const resultBest = document.getElementById('result-best');
 const toast = document.getElementById('pulse-toast');
+const coreDot = document.getElementById('core-dot') as HTMLElement;
 
-const STORAGE_KEY = 'kazari.pulse.best.v1';
+const STORAGE_KEY = 'kazari.pulse.best.v2';
+const DRONE_KEY = 'kazari.pulse.drone.v1';
+const THEME_KEY = 'kazari.pulse.theme.v1';
+
 let highScore = Number(localStorage.getItem(STORAGE_KEY) ?? 0) || 0;
+let activeDroneId = localStorage.getItem(DRONE_KEY) || 'phantom';
+let activeThemeId = localStorage.getItem(THEME_KEY) || 'synth';
+
 if (best) best.textContent = String(highScore);
+
+function applyTheme(themeId: string): void {
+  activeThemeId = themeId;
+  localStorage.setItem(THEME_KEY, themeId);
+  const theme = THEMES.find((t) => t.id === themeId) || THEMES[0];
+  document.documentElement.style.setProperty('--pulse-bg1', theme.bg1);
+  document.documentElement.style.setProperty('--pulse-bg2', theme.bg2);
+  document.documentElement.style.setProperty('--pulse-cyan', theme.cyan);
+  document.documentElement.style.setProperty('--pulse-coral', theme.coral);
+  document.documentElement.style.setProperty('--pulse-yellow', theme.yellow);
+}
+
+function applyDrone(droneId: string): void {
+  activeDroneId = droneId;
+  localStorage.setItem(DRONE_KEY, droneId);
+  const drone = DRONES.find((d) => d.id === droneId) || DRONES[0];
+  if (coreDot) coreDot.style.background = drone.color;
+  game.setDrone(drone);
+}
+
+applyTheme(activeThemeId);
+applyDrone(activeDroneId);
 
 const audio = new (class PulseAudio {
   private context: AudioContext | null = null;
@@ -242,6 +305,45 @@ function share(): void {
   }
 }
 
+function renderShop(): void {
+  const list = document.getElementById('drone-list');
+  if (!list) return;
+  list.innerHTML = DRONES.map((drone) => {
+    const active = drone.id === activeDroneId;
+    return `
+      <div class="catalog-item ${active ? 'is-active' : ''}">
+        <span class="drone-preview" style="background:${drone.color}; box-shadow:0 0 16px ${drone.glow}"></span>
+        <div class="catalog-info">
+          <h3>${drone.name}</h3>
+          <p>${drone.description}</p>
+          <small class="perk">${drone.perk}</small>
+        </div>
+        <button class="pulse-button ${active ? 'pulse-secondary' : 'pulse-primary'}" type="button" data-drone="${drone.id}">
+          <span>${active ? copy.selected : copy.buy}</span>
+        </button>
+      </div>`;
+  }).join('');
+}
+
+function renderThemes(): void {
+  const list = document.getElementById('theme-list');
+  if (!list) return;
+  list.innerHTML = THEMES.map((theme) => {
+    const active = theme.id === activeThemeId;
+    return `
+      <div class="catalog-item ${active ? 'is-active' : ''}">
+        <span class="theme-preview" style="background:linear-gradient(135deg, ${theme.bg1}, ${theme.cyan});"></span>
+        <div class="catalog-info">
+          <h3>${theme.name}</h3>
+          <small class="perk">Кибернетическая палитра</small>
+        </div>
+        <button class="pulse-button ${active ? 'pulse-secondary' : 'pulse-primary'}" type="button" data-theme="${theme.id}">
+          <span>${active ? copy.selected : copy.buy}</span>
+        </button>
+      </div>`;
+  }).join('');
+}
+
 document.getElementById('pulse-start')?.addEventListener('click', start);
 document.getElementById('pulse-retry')?.addEventListener('click', start);
 document.getElementById('pulse-share')?.addEventListener('click', share);
@@ -249,6 +351,43 @@ document.getElementById('pulse-menu-button')?.addEventListener('click', goMenu);
 document.getElementById('pulse-continue')?.addEventListener('click', togglePause);
 document.getElementById('pulse-pause-menu')?.addEventListener('click', goMenu);
 pauseButton.addEventListener('click', togglePause);
+
+document.getElementById('open-shop')?.addEventListener('click', () => {
+  renderShop();
+  document.getElementById('modal-shop')?.removeAttribute('hidden');
+});
+document.getElementById('close-shop')?.addEventListener('click', () => {
+  document.getElementById('modal-shop')?.setAttribute('hidden', '');
+});
+document.getElementById('open-themes')?.addEventListener('click', () => {
+  renderThemes();
+  document.getElementById('modal-themes')?.removeAttribute('hidden');
+});
+document.getElementById('close-themes')?.addEventListener('click', () => {
+  document.getElementById('modal-themes')?.setAttribute('hidden', '');
+});
+
+document.addEventListener('click', (event) => {
+  const target = event.target as HTMLElement | null;
+  const droneBtn = target?.closest('[data-drone]');
+  if (droneBtn) {
+    const id = (droneBtn as HTMLElement).dataset.drone;
+    if (id) {
+      applyDrone(id);
+      renderShop();
+      showToast(lang === 'ru' ? 'Дрон активирован' : 'Drone equipped');
+    }
+  }
+  const themeBtn = target?.closest('[data-theme]');
+  if (themeBtn) {
+    const id = (themeBtn as HTMLElement).dataset.theme;
+    if (id) {
+      applyTheme(id);
+      renderThemes();
+      showToast(lang === 'ru' ? 'Тема применена' : 'Theme applied');
+    }
+  }
+});
 
 window.addEventListener('keydown', (event) => {
   if (event.code === 'Space' || event.code === 'ArrowUp') {
