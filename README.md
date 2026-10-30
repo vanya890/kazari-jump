@@ -1,22 +1,22 @@
 # Kazari Jump
 
-Гиперказуальный one-tap раннер для Telegram: котик бежит сам, тап — прыжок, монеты, скины и рекорды друзей. Canvas + TypeScript без игрового движка.
+Две гиперказуальные игры для Telegram. Canvas + TypeScript, без игрового движка.
 
-[![Играть в браузере](https://img.shields.io/badge/%E2%96%B6%20%D0%98%D0%B3%D1%80%D0%B0%D1%82%D1%8C-%D0%B2%20%D0%B1%D1%80%D0%B0%D1%83%D0%B7%D0%B5%D1%80%D0%B5-2ee6a8?style=for-the-badge)](https://vanya890.github.io/kazari-jump/)
+[![Pulse Drift — играть](https://img.shields.io/badge/%E2%96%B6%20Pulse%20Drift-%D0%B8%D0%B3%D1%80%D0%B0%D1%82%D1%8C-62f6e0?style=for-the-badge)](https://vanya890.github.io/kazari-jump/)
+[![Jump — играть](https://img.shields.io/badge/%E2%96%B6%20Kazari%20Jump-%D0%B8%D0%B3%D1%80%D0%B0%D1%82%D1%8C-2ee6a8?style=for-the-badge)](https://vanya890.github.io/kazari-jump/?game=jump)
 [![Telegram](https://img.shields.io/badge/Telegram-%40CodyKazari__bot-26A5E4?style=for-the-badge&logo=telegram&logoColor=white)](https://t.me/CodyKazari_bot)
-[![Source](https://img.shields.io/badge/GitHub-%D0%98%D1%81%D1%85%D0%BE%D0%B4%D0%BD%D0%B8%D0%BA%D0%B8-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/vanya890/kazari-jump)
+[![GitHub](https://img.shields.io/badge/GitHub-%D0%98%D1%81%D1%85%D0%BE%D0%B4%D0%BD%D0%B8%D0%BA%D0%B8-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/vanya890/kazari-jump)
 [![Deploy browser demo](https://github.com/vanya890/kazari-jump/actions/workflows/pages.yml/badge.svg)](https://github.com/vanya890/kazari-jump/actions/workflows/pages.yml)
 
-[▶ Открыть демо](https://vanya890.github.io/kazari-jump/) · [@CodyKazari_bot](https://t.me/CodyKazari_bot) · [Пересобрать в Actions](https://github.com/vanya890/kazari-jump/actions/workflows/pages.yml) · [Скачать ZIP](https://github.com/vanya890/kazari-jump/archive/refs/heads/main.zip)
+[▶ Pulse Drift](https://vanya890.github.io/kazari-jump/) · [▶ Jump](https://vanya890.github.io/kazari-jump/?game=jump) · [@CodyKazari_bot](https://t.me/CodyKazari_bot) · [Собрать в Actions](https://github.com/vanya890/kazari-jump/actions/workflows/pages.yml) · [ZIP](https://github.com/vanya890/kazari-jump/archive/refs/heads/main.zip)
 
-> Сейчас @CodyKazari_bot открывает статическую демо-версию через кнопку меню. Полный бэкенд (реальный рейтинг, рефералы, Stars) готов в `tgcloud/`, но ещё не развёрнут: для него нужен CLI-токен BotFather.
+> @CodyKazari_bot открывает статическую демо-версию. Полный бэкенд (рейтинг, Stars) готов в `tgcloud/`, но не развёрнут: нужен CLI-токен BotFather.
 
 ## Что это
 
-- Бесконечный забег на 30–60 секунд, скорость растёт, счёт равен дистанции в метрах.
-- Один тап/клик/пробел — прыжок; удержание — выше прыжок.
-- Монеты, пять скинов, ночные/дневные палитры, параллакс, частицы и WebAudio-звуки без единого изображения.
-- Экран смерти с одним возрождением, челлендж другу, рейтинг, магазин и настройки RU/EN.
+**Kazari Jump** — бесконечный one-tap раннер, котик прыгает через препятствия, собирает монеты, скорость растёт. Тап — прыжок, удержание — выше. Скины, рейтинг, челлендж другу, Stars. RU/EN.
+
+**Pulse Drift** — ритмичный гейт-раннер. Тап/Space поднимает неоновый дрон, он медленно опускается. Ворота летят с нарастающей частотой, комбо множит результат. Рекорд в localStorage, шаринг через Telegram. По умолчанию открывается при загрузке, Jump — по ссылке `?game=jump`.
 
 ## Две версии
 
