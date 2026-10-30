@@ -26,6 +26,7 @@
 .pulse-icon { pointer-events: auto; display: grid; place-items: center; width: 38px; height: 38px; border: 1px solid rgba(217,228,240,.18); border-radius: 50%; background: rgba(8,11,24,.42); color: var(--pulse-muted); font-size: 13px; }
 
 .pulse-menu { position: absolute; z-index: 3; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: calc(var(--pulse-safe-top) + 26px) 28px calc(var(--pulse-safe-bottom) + 26px); text-align: center; animation: menu-in .7s cubic-bezier(.2,.8,.2,1) both; }
+.pulse-menu[hidden] { display: none !important; }
 .signal-lockup { position: relative; display: grid; place-items: center; width: 142px; height: 142px; margin: 0 auto 22px; }
 .signal-core { display: grid; place-items: center; width: 42px; height: 42px; border: 1px solid rgba(98,246,224,.65); border-radius: 50%; background: rgba(98,246,224,.1); box-shadow: 0 0 44px rgba(98,246,224,.28); }
 .signal-core span { width: 12px; height: 12px; border-radius: 50%; background: var(--pulse-cyan); box-shadow: 0 0 20px 5px rgba(98,246,224,.7); }
