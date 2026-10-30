@@ -492,6 +492,7 @@ export class UI {
       <div class="screen screen-loading">
         <div class="loading-card">
           <div class="boot-mark is-spinning">${icon('spark')}</div>
+          <h1 class="loading-title">${esc(t('app.name'))}</h1>
           <p class="loading-text">${esc(t('loading'))}</p>
           <span class="loading-bar" aria-hidden="true"><span></span></span>
         </div>
