@@ -56,7 +56,7 @@ const commandsEn = [
 
 try {
   const me = await call('getMe');
-  await call('setMyName', { name: 'Kazari Jump' });
+  await call('setMyName', { name: 'Kazari Games' });
   await call('setMyShortDescription', {
     short_description: 'Один тап. Бесконечный забег. Прыгай, собирай монеты, бей рекорды.',
   });
@@ -76,7 +76,7 @@ try {
   await call('setMyCommands', { commands });
   await call('setMyCommands', { commands: commandsEn, language_code: 'en' });
   await call('setChatMenuButton', {
-    menu_button: { type: 'web_app', text: 'Kazari Jump', web_app: { url: appUrl } },
+    menu_button: { type: 'web_app', text: 'Pulse Drift', web_app: { url: appUrl } },
   });
   console.log(`Configured @${me.username} → ${appUrl}`);
 } catch (error) {
