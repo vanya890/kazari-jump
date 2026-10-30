@@ -179,11 +179,10 @@ function applyDrone(droneId: string): void {
   localStorage.setItem(DRONE_KEY, droneId);
   const drone = DRONES.find((d) => d.id === droneId) || DRONES[0];
   if (coreDot) coreDot.style.background = drone.color;
-  game.setDrone(drone);
+  if (game) game.setDrone(drone);
 }
 
 applyTheme(activeThemeId);
-applyDrone(activeDroneId);
 
 const audio = new (class PulseAudio {
   private context: AudioContext | null = null;
