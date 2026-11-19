@@ -1,4 +1,5 @@
 import './style.css';
+import './jump-refresh.css';
 import { AppError, backend } from './api';
 import { Game } from './game/engine';
 import type { RunSnapshot } from './game/types';
@@ -54,6 +55,10 @@ let lang: Lang = stored.lang === 'ru' || stored.lang === 'en' ? stored.lang : de
 const canvas = document.querySelector<HTMLCanvasElement>('#game');
 const uiRoot = document.getElementById('ui');
 if (!canvas || !uiRoot) throw new Error('Kazari Jump: game shell is missing');
+
+document.title = 'Kazari Jump';
+const description = document.querySelector<HTMLMetaElement>('meta[name="description"]');
+if (description) description.content = 'Kazari Jump — уютный бесконечный раннер с котиком, мирами и испытаниями.';
 
 const state: UiState = createUiState(lang);
 state.sound = stored.sound !== false;
