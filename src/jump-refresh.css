@@ -1,0 +1,509 @@
+/* Kazari Jump 0.2 — visual refresh */
+:root {
+  --bg: #0b1022;
+  --bg-deep: #070b18;
+  --ink: #fffaf4;
+  --muted: #c0bfd4;
+  --muted-2: #878ca8;
+  --accent: #70f0c0;
+  --accent-2: #83dfff;
+  --violet: #a99aff;
+  --pink: #ff9ab7;
+  --gold: #ffd779;
+  --danger: #ff7e8d;
+  --card: rgba(255, 255, 255, 0.065);
+  --card-2: rgba(255, 255, 255, 0.11);
+  --stroke: rgba(255, 255, 255, 0.105);
+  --stroke-2: rgba(255, 255, 255, 0.2);
+  --radius: 22px;
+}
+
+.stage {
+  background:
+    radial-gradient(80% 65% at 50% 15%, rgba(105, 91, 181, 0.22), transparent 70%),
+    linear-gradient(180deg, #11142b, #090d1c);
+}
+
+#game {
+  filter: saturate(1.08) contrast(1.025);
+}
+
+/* Menu: a quieter, more premium adventure-card layout. */
+.screen-menu {
+  isolation: isolate;
+  gap: clamp(7px, 1.35vh, 14px);
+  padding-left: clamp(16px, 4.8vw, 26px);
+  padding-right: clamp(16px, 4.8vw, 26px);
+  background:
+    radial-gradient(80% 42% at 50% 35%, rgba(126, 112, 220, 0.28), transparent 74%),
+    radial-gradient(55% 34% at 8% 10%, rgba(112, 240, 192, 0.12), transparent 75%),
+    radial-gradient(55% 30% at 94% 13%, rgba(255, 154, 183, 0.12), transparent 72%),
+    linear-gradient(180deg, rgba(11, 16, 34, 0.72), rgba(9, 13, 28, 0.82) 58%, #080c19 100%);
+}
+
+.screen-menu::before,
+.screen-menu::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.screen-menu::before {
+  opacity: 0.24;
+  background-image:
+    radial-gradient(circle at 14% 19%, rgba(255, 255, 255, 0.8) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 82% 24%, rgba(255, 231, 189, 0.75) 0 1px, transparent 1.7px),
+    radial-gradient(circle at 72% 61%, rgba(255, 255, 255, 0.7) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 24% 75%, rgba(255, 255, 255, 0.5) 0 1px, transparent 1.5px);
+  background-size: 170px 190px, 230px 210px, 190px 170px, 260px 240px;
+}
+
+.screen-menu::after {
+  inset: auto 8% 30% 8%;
+  height: 1px;
+  opacity: 0.8;
+  background: linear-gradient(90deg, transparent, rgba(178, 165, 255, 0.28), rgba(112, 240, 192, 0.22), transparent);
+  filter: blur(1px);
+}
+
+.menu-head {
+  position: relative;
+  z-index: 1;
+}
+
+.user-chip {
+  padding: 5px 14px 5px 5px;
+  background: rgba(12, 16, 35, 0.52);
+  border-color: rgba(255, 255, 255, 0.13);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.user-bubble {
+  width: 34px;
+  height: 34px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  box-shadow: 0 0 18px rgba(169, 154, 255, 0.18);
+}
+
+.user-copy b {
+  font-size: 12px;
+}
+
+.balance-pill {
+  padding: 8px 13px;
+  background: linear-gradient(130deg, rgba(255, 215, 121, 0.17), rgba(255, 174, 91, 0.08));
+  border-color: rgba(255, 215, 121, 0.34);
+  box-shadow: 0 7px 22px rgba(255, 194, 95, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.menu-hero {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 480px);
+  gap: clamp(5px, 0.95vh, 10px);
+  flex: 1 1 auto;
+  padding-top: 0;
+}
+
+.menu-tagline {
+  color: #c4c0e1;
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-shadow: 0 2px 16px rgba(169, 154, 255, 0.3);
+}
+
+.wordmark {
+  margin-top: 1px;
+  font-size: clamp(54px, 15vw, 88px);
+  line-height: 0.79;
+  letter-spacing: -0.075em;
+  filter: drop-shadow(0 12px 24px rgba(5, 7, 20, 0.28));
+}
+
+.wordmark span {
+  color: #fffaf4;
+  text-shadow: 0 6px 30px rgba(255, 255, 255, 0.1);
+}
+
+.wordmark b {
+  background: linear-gradient(112deg, #8ff4c8 0%, #79e6e4 42%, #b6a5ff 88%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.hero-stage {
+  width: min(74vw, 310px, 27vh);
+  margin: 0;
+  filter: drop-shadow(0 16px 25px rgba(0, 0, 0, 0.18));
+}
+
+.hero-glow {
+  inset: 4%;
+  background:
+    radial-gradient(circle at 50% 55%, rgba(255, 220, 162, 0.26), rgba(132, 119, 230, 0.17) 43%, rgba(91, 226, 198, 0.1) 62%, transparent 74%);
+  filter: blur(11px);
+}
+
+.hero-avatar {
+  width: clamp(118px, 25vh, 184px);
+  height: clamp(118px, 25vh, 184px);
+  filter: drop-shadow(0 20px 18px rgba(2, 4, 15, 0.44));
+}
+
+.hero-world-mark {
+  right: 8%;
+  bottom: 10%;
+  background: linear-gradient(145deg, rgba(23, 24, 55, 0.92), rgba(14, 20, 39, 0.88));
+  border: 1px solid rgba(255, 224, 163, 0.48);
+  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.3), 0 0 24px rgba(255, 215, 121, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.16);
+}
+
+.world-card {
+  padding: 13px 15px 11px;
+  border-radius: 19px;
+  background:
+    radial-gradient(120% 140% at 0% 0%, rgba(157, 145, 255, 0.15), transparent 58%),
+    linear-gradient(120deg, rgba(17, 22, 46, 0.86), rgba(23, 25, 54, 0.68));
+  border: 1px solid rgba(194, 185, 255, 0.2);
+  box-shadow: 0 12px 34px rgba(0, 0, 0, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.world-card-kicker {
+  color: var(--gold);
+  font-size: 9px;
+  letter-spacing: 0.15em;
+}
+
+.world-card-copy strong {
+  font-size: 15px;
+  color: #fffaf4;
+}
+
+.world-card-copy span:last-child {
+  color: #b8b7d1;
+  font-size: 10.5px;
+}
+
+.world-progress {
+  height: 6px;
+  background: rgba(255, 255, 255, 0.09);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.22);
+}
+
+.world-progress span {
+  background: linear-gradient(90deg, #ffd779, #ff9ab7 48%, #8debd0);
+  box-shadow: 0 0 14px rgba(255, 215, 121, 0.38);
+}
+
+.world-card-foot {
+  margin-top: 7px;
+  color: #a6a7c3;
+  font-size: 9.5px;
+}
+
+.world-route {
+  gap: 7px;
+  margin-top: 2px;
+}
+
+.route-stop {
+  width: 31px;
+  height: 31px;
+  background: rgba(18, 22, 45, 0.5);
+  border-color: rgba(255, 255, 255, 0.13);
+}
+
+.route-stop.is-reached {
+  background: rgba(112, 240, 192, 0.12);
+  border-color: rgba(112, 240, 192, 0.38);
+}
+
+.route-stop.is-active {
+  background: linear-gradient(145deg, rgba(255, 215, 121, 0.2), rgba(255, 154, 183, 0.12));
+  border-color: rgba(255, 215, 121, 0.65);
+  box-shadow: 0 0 22px rgba(255, 215, 121, 0.18);
+}
+
+.route-line {
+  background: linear-gradient(90deg, rgba(112, 240, 192, 0.5), rgba(169, 154, 255, 0.32));
+}
+
+.menu-stats {
+  gap: 9px;
+  margin-top: 4px;
+}
+
+.stat {
+  position: relative;
+  gap: 3px;
+  padding: 10px 5px;
+  border-radius: 17px;
+  background: linear-gradient(150deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.035));
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.07);
+}
+
+.stat-label {
+  color: #a5a7c1;
+  font-size: 8px;
+  letter-spacing: 0.13em;
+}
+
+.stat-value {
+  color: #fffaf4;
+  font-size: clamp(17px, 4.8vw, 22px);
+}
+
+.stat-value small {
+  color: #a5a7c1;
+}
+
+.challenge-banner {
+  position: relative;
+  z-index: 1;
+  background: linear-gradient(105deg, rgba(255, 154, 183, 0.15), rgba(169, 154, 255, 0.16));
+  border-color: rgba(255, 154, 183, 0.3);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.challenge-icon {
+  background: rgba(255, 215, 121, 0.17);
+}
+
+.menu-actions {
+  position: relative;
+  z-index: 1;
+  gap: 10px;
+  margin-top: 2px;
+}
+
+.btn {
+  border-radius: 16px;
+  transition: transform 0.16s cubic-bezier(0.2, 0.8, 0.2, 1), filter 0.16s ease, box-shadow 0.16s ease;
+}
+
+.btn:active {
+  transform: scale(0.975) translateY(1px);
+  filter: brightness(0.97);
+}
+
+.btn-play {
+  min-height: clamp(56px, 8vh, 68px);
+  border-radius: 20px;
+  background: linear-gradient(112deg, #8bf0c4 0%, #70e9d0 48%, #8ddfff 100%);
+  color: #0b2430;
+  letter-spacing: 0.075em;
+  box-shadow: 0 14px 34px rgba(86, 220, 190, 0.22), 0 3px 0 rgba(22, 131, 122, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.66);
+}
+
+.btn-play::after {
+  opacity: 0.7;
+  animation-duration: 5.8s;
+}
+
+.btn-play .ico {
+  width: 23px;
+  height: 23px;
+}
+
+.menu-nav {
+  gap: 9px;
+}
+
+.nav-btn {
+  min-height: 58px;
+  border-radius: 17px;
+  background: rgba(255, 255, 255, 0.055);
+  border-color: rgba(255, 255, 255, 0.095);
+  color: #c6c5dc;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.nav-btn .ico {
+  color: #b9adff;
+  filter: drop-shadow(0 2px 8px rgba(169, 154, 255, 0.24));
+}
+
+.nav-btn:first-child .ico { color: #ff9ab7; }
+.nav-btn:last-child .ico { color: #8debd0; }
+
+.nav-btn:active {
+  background: rgba(255, 255, 255, 0.11);
+}
+
+.menu-foot {
+  position: relative;
+  z-index: 1;
+  color: #a1a4c0;
+  min-height: 22px;
+}
+
+.top-preview {
+  color: #a7a9c5;
+}
+
+.link-btn {
+  color: #bdb2ff;
+}
+
+.offline-pill {
+  background: rgba(169, 154, 255, 0.14);
+  color: #d1c9ff;
+}
+
+/* In-run HUD and touch guidance. */
+.hud-score,
+.hud-coins,
+.icon-button {
+  background: rgba(10, 14, 31, 0.66);
+  border-color: rgba(255, 255, 255, 0.16);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.hud-value {
+  text-shadow: 0 2px 18px rgba(255, 255, 255, 0.2);
+}
+
+.tap-hint {
+  bottom: calc(22% + var(--safe-bottom));
+  padding: 10px 16px;
+  border-color: rgba(141, 235, 208, 0.24);
+  background: rgba(9, 14, 30, 0.58);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.15), 0 0 24px rgba(112, 240, 192, 0.07);
+}
+
+/* Dialogs inherit the same glass / soft-light language. */
+.sheet {
+  background:
+    radial-gradient(90% 34% at 50% 0%, rgba(169, 154, 255, 0.16), transparent 78%),
+    linear-gradient(165deg, rgba(25, 28, 57, 0.98), rgba(11, 15, 32, 0.99));
+  border-color: rgba(202, 195, 255, 0.16);
+  box-shadow: 0 26px 80px rgba(0, 0, 0, 0.54), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.sheet-grip {
+  background: rgba(255, 255, 255, 0.28);
+}
+
+.eyebrow {
+  color: #b8b0e8;
+  letter-spacing: 0.16em;
+}
+
+.btn-primary {
+  background: linear-gradient(125deg, #a99aff, #8275f1 58%, #6d65d9);
+  box-shadow: 0 10px 26px rgba(130, 117, 241, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
+.btn-ghost {
+  background: rgba(255, 255, 255, 0.055);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.panel,
+.setting-list {
+  background: rgba(255, 255, 255, 0.045);
+  border-color: rgba(255, 255, 255, 0.095);
+}
+
+.toast {
+  background: rgba(13, 18, 38, 0.97);
+  border-color: rgba(255, 255, 255, 0.18);
+  box-shadow: 0 14px 38px rgba(0, 0, 0, 0.38);
+}
+
+@media (min-width: 720px) and (min-height: 640px) {
+  .screen-menu {
+    max-width: 600px;
+    padding-left: 28px;
+    padding-right: 28px;
+  }
+
+  .hero-stage {
+    width: min(42vw, 240px, 22vh);
+  }
+
+  .hero-avatar {
+    width: clamp(118px, 21vh, 160px);
+    height: clamp(118px, 21vh, 160px);
+  }
+}
+
+@media (max-height: 700px) {
+  .menu-hero {
+    gap: 4px;
+  }
+
+  .wordmark {
+    font-size: clamp(40px, 11.5vw, 58px);
+  }
+
+  .hero-stage {
+    width: min(50vw, 176px, 18vh);
+  }
+
+  .hero-avatar {
+    width: clamp(78px, 15vh, 112px);
+    height: clamp(78px, 15vh, 112px);
+  }
+
+  .world-card {
+    padding: 8px 11px;
+  }
+
+  .menu-stats {
+    margin-top: 1px;
+  }
+
+  .stat {
+    padding: 7px 4px;
+  }
+
+  .nav-btn {
+    min-height: 49px;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 600px) {
+  .screen-menu {
+    max-width: none;
+  }
+
+  .menu-hero {
+    width: 100%;
+  }
+
+  .wordmark {
+    font-size: clamp(30px, 8vh, 46px);
+  }
+
+  .hero-stage {
+    width: min(100%, 19vh, 130px);
+  }
+
+  .hero-avatar {
+    width: clamp(56px, 13vh, 78px);
+    height: clamp(56px, 13vh, 78px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .screen-menu,
+  .wordmark,
+  .hero-stage,
+  .hero-glow,
+  .hero-avatar,
+  .hero-world-mark,
+  .btn-play::after,
+  .tap-hint,
+  .route-stop,
+  .world-progress span {
+    animation: none !important;
+    transition: none !important;
+  }
+}

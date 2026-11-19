@@ -70,6 +70,11 @@ class Sfx {
     this.tone(1480, 1480, 0.07, 'sine', 0.09, 0.045);
   }
 
+  land(impact: number): void {
+    const strength = Math.max(0.35, Math.min(1, impact));
+    this.tone(190 + strength * 70, 92 + strength * 28, 0.095, 'sine', 0.055 + strength * 0.035);
+  }
+
   death(): void {
     this.tone(240, 55, 0.38, 'sawtooth', 0.16);
     this.tone(120, 45, 0.45, 'square', 0.06, 0.04);
