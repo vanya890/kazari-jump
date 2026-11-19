@@ -499,7 +499,10 @@ export class Game {
         const impact = Math.min(1, Math.abs(p.vy) / (1100 * u));
         p.squashX = 1 + 0.2 * impact;
         p.squashY = 1 - 0.24 * impact;
-        if (impact > 0.3) this.emitDust(p.x, s.groundY, Math.round(6 + impact * 8), '#cfc6e8');
+        if (impact > 0.3) {
+          this.emitDust(p.x, s.groundY, Math.round(8 + impact * 10), '#cfc6e8');
+          sfx.land(impact);
+        }
       }
       p.vy = 0;
       p.onGround = true;
