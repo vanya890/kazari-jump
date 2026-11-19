@@ -1,6 +1,7 @@
 import type { GameState, Obstacle, Particle } from './types';
 import { WORLD_ATLAS, worldTransitionAt } from './worlds';
 import { drawPlayer } from './player';
+import { renderJumpJuice } from './juice';
 
 export interface Palette {
   skyTop: string;
@@ -785,6 +786,8 @@ export function renderGame(ctx: CanvasRenderingContext2D, s: GameState): void {
     ctx.shadowBlur = 0;
     ctx.globalAlpha = 1;
   }
+
+  renderJumpJuice(ctx, s);
 
   const vignette = ctx.createRadialGradient(
     s.w / 2,
